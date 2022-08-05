@@ -5,13 +5,12 @@ var bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 
-router.get('/:id', auth, async (req, res) => {
+router.get('/user/:id', auth, async (req, res) => {
 	try {
 		const user = await User.findById(req.params.id).lean().exec();
 		res.status(200).json({ name: user.username, email: user.email });
 	} catch (err) {
-		console.error(err);
-		res.status(400).json({ status: 'failed' });
+		res.status(400).json({ status: 'Invalid User' });
 	}
 });
 
@@ -93,9 +92,6 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/logout', auth, async (req, res) => {
-	const authHeader =
-		req.body.token || req.query.token || req.headers['x-access-token'];
-
 	try {
 		res.cookie('jwt', '', { maxAge: 1 });
 		res.send({ msg: 'You have been logged out' });
