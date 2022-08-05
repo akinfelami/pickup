@@ -37,7 +37,6 @@ router.post('/register', async (req, res) => {
 		});
 
 		// Create Tokens
-
 		const token = jwt.sign(
 			{ user_id: newUser._id, email },
 			process.env.TOKEN_KEY
