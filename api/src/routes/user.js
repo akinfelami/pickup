@@ -5,12 +5,23 @@ var bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const auth = require('../middleware/auth');
 
+router.get('/', auth, async (req, res) => {
+	res.status(200).send('Welcome');
+});
+
 router.get('/user/:id', auth, async (req, res) => {
 	try {
 		const user = await User.findById(req.params.id).lean().exec();
-		res.status(200).json({ name: user.username, email: user.email });
+		res.status(200).json({
+			id: user._id,
+			name: user.username,
+			email: user.email,
+			groups: user.groups,
+			events: user.events,
+			interests: user.interests,
+		});
 	} catch (err) {
-		res.status(400).json({ status: 'Invalid User' });
+		res.status(400).json({ status: 'failed', message: err.message });
 	}
 });
 
@@ -30,7 +41,7 @@ router.post('/register', async (req, res) => {
 
 		var encryptedPassword = await bcrypt.hash(password, 10);
 
-		const newUser = await User.create({
+		const newUser = new User({
 			username,
 			email: email.toLowerCase(),
 			password: encryptedPassword,
@@ -43,6 +54,8 @@ router.post('/register', async (req, res) => {
 		);
 
 		res.cookie('jwt', token, { httpOnly: true });
+
+		await newUser.save();
 
 		res.status(201).json({
 			id: newUser._id,
@@ -79,14 +92,16 @@ router.post('/login', async (req, res) => {
 				username: user.username,
 				email: user.email,
 				profile_pic: user.profile_pic,
+				groups: user.groups,
+				events: user.events,
+				interests: user.interests,
 				interests: user.interests,
 				createdAt: user.createdAt,
 			});
-		} else {
-			res.status(400).send('Invalid Credentials');
 		}
 	} catch (err) {
 		console.error(err);
+		res.status(400).send('Invalid Credentials');
 	}
 });
 
