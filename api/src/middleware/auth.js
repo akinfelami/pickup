@@ -12,7 +12,7 @@ const verifyToken = (req, res, next) => {
 		req.user = decoded;
 		next();
 	} catch (err) {
-		return res.status(401).send('Invalid Toekn');
+		return res.status(401).send('Invalid Token');
 	}
 };
 

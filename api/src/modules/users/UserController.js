@@ -1,15 +1,13 @@
 const express = require('express');
-const router = express.Router();
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
 const User = require('../models/User');
-const auth = require('../middleware/auth');
 
-router.get('/', auth, async (req, res) => {
+const getWelcome = async (req, res) => {
 	res.status(200).send('Welcome');
-});
+};
 
-router.get('/user/:id', auth, async (req, res) => {
+const getUser = async (req, res) => {
 	try {
 		const user = await User.findById(req.params.id).lean().exec();
 		res.status(200).json({
@@ -23,9 +21,27 @@ router.get('/user/:id', auth, async (req, res) => {
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
-});
+};
 
-router.post('/register', async (req, res) => {
+const getAllUsers = async (req, res) => {
+	try {
+		const allUsers = await User.find({}).sort({ createdAt: -1 });
+		for (let user in allUsers) {
+			res.status(200).json({
+				id: user._id,
+				name: user.username,
+				email: user.email,
+				groups: user.groups,
+				events: user.events,
+				interests: user.interests,
+			});
+		}
+	} catch (err) {
+		res.status(400).json({ status: 'failed', message: err.message });
+	}
+};
+
+const registerUser = async (req, res) => {
 	try {
 		const { username, email, password } = req.body;
 
@@ -69,9 +85,9 @@ router.post('/register', async (req, res) => {
 		console.error(err);
 		res.status(400).json({ err });
 	}
-});
+};
 
-router.post('/login', async (req, res) => {
+const loginUser = async (req, res) => {
 	try {
 		const { email, password } = req.body;
 		if (!(email && password)) {
@@ -103,15 +119,20 @@ router.post('/login', async (req, res) => {
 		console.error(err);
 		res.status(400).send('Invalid Credentials');
 	}
-});
+};
 
-router.get('/logout', auth, async (req, res) => {
+const logoutUser = async (req, res) => {
 	try {
 		res.cookie('jwt', '', { maxAge: 1 });
 		res.send({ msg: 'You have been logged out' });
 	} catch (err) {
 		res.send({ msg: err });
 	}
-});
+};
 
-module.exports = router;
+(module.exports = getWelcome),
+	getUser,
+	registerUser,
+	loginUser,
+	logoutUser,
+	getAllUsers;

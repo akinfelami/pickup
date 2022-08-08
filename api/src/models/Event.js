@@ -2,9 +2,17 @@ const mongoose = require('mongoose');
 
 const eventSchema = new mongoose.Schema(
 	{
-		Title: { type: String, required: true },
+		title: {
+			type: String,
+			required: true,
+			minLength: [10, 'Must be at least 10 characters long'],
+		},
 		owner: { type: Schema.Types.ObjectId, ref: 'user' },
-		details: { type: Text, required: true },
+		description: {
+			type: Text,
+			required: true,
+			minLength: [10, 'Must be at least 10 characters long'],
+		},
 		tags: { type: Array, default: [] },
 		rsvp: [
 			{
@@ -12,6 +20,7 @@ const eventSchema = new mongoose.Schema(
 				ref: 'user',
 			},
 		],
+		date: { type: Date },
 		location: { type: String },
 		organizer: {
 			type: mongoose.Schema.Types.ObjectId,
