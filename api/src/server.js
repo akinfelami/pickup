@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 const app = express();
 const userRouter = require('./modules/users/UserRoutes');
 const eventRouter = require('./modules/events/EventRoutes');
-const commentRouter = require('./modules/comments/commentRoute');
+const commentRouter = require('./modules/comments/CommentRoutes');
 
 app.use(cors());
 app.use(cookieParser());
