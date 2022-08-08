@@ -1,6 +1,6 @@
 var jwt = require('jsonwebtoken');
 var bcrypt = require('bcryptjs');
-const User = require('../models/User');
+const User = require('../../models/User');
 
 const getWelcome = async (req, res) => {
 	res.status(200).send('Welcome');
@@ -25,16 +25,7 @@ const getUser = async (req, res) => {
 const getAllUsers = async (req, res) => {
 	try {
 		const allUsers = await User.find({}).sort({ createdAt: -1 });
-		for (let user in allUsers) {
-			res.status(200).json({
-				id: user._id,
-				name: user.username,
-				email: user.email,
-				groups: user.groups,
-				events: user.events,
-				interests: user.interests,
-			});
-		}
+		res.status(200).json(allUsers);
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
@@ -45,13 +36,13 @@ const registerUser = async (req, res) => {
 		const { username, email, password } = req.body;
 
 		if (!(email && password && username)) {
-			res.status(400).send('All input required');
+			return res.status(400).send('All input required');
 		}
 
 		const oldUser = await User.findOne({ email });
 
 		if (oldUser) {
-			res.status(409).send('User already exists. Please Login instead');
+			return res.status(409).send('User already exists. Please Login instead');
 		}
 
 		var encryptedPassword = await bcrypt.hash(password, 10);
@@ -81,8 +72,7 @@ const registerUser = async (req, res) => {
 			createdAt: newUser.createdAt,
 		});
 	} catch (err) {
-		console.error(err);
-		res.status(400).json({ err });
+		res.status(400).json({ status: 'failed', message: err.message });
 	}
 };
 
@@ -129,9 +119,11 @@ const logoutUser = async (req, res) => {
 	}
 };
 
-(module.exports = getWelcome),
+module.exports = {
+	getWelcome,
 	getUser,
 	registerUser,
 	loginUser,
 	logoutUser,
-	getAllUsers;
+	getAllUsers,
+};

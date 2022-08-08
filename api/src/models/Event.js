@@ -8,7 +8,7 @@ const eventSchema = new mongoose.Schema(
 			minLength: [10, 'Must be at least 10 characters long'],
 		},
 		description: {
-			type: Text,
+			type: String,
 			required: true,
 			minLength: [10, 'Must be at least 10 characters long'],
 		},
