@@ -12,6 +12,6 @@ router.get('/:userId/events', EventController.getAllUserEvent);
 router.post('/:userId/new', EventController.createEvent);
 router.put('/:userId/:eventId/rsvp', EventController.rsvpUser);
 router.put('/:eventId/edit', EventController.editEvent);
-router.delete('//:eventId/delete', EventController.deleteEvent);
+router.delete('/:eventId/delete', EventController.deleteEvent);
 
 module.exports = router;

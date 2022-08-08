@@ -9,7 +9,7 @@ const getWelcome = async (req, res) => {
 
 const getUser = async (req, res) => {
 	try {
-		const user = await User.findById(req.params.id).lean().exec();
+		const user = await User.findById(req.params.userId).lean().exec();
 		res.status(200).json({
 			id: user._id,
 			name: user.username,

@@ -8,12 +8,6 @@ const userSchema = new mongoose.Schema(
 		email: { type: String, required: true, unique: true },
 		password: { type: String, required: true },
 		profile_pic: { type: String, default: y },
-		groups: [
-			{
-				type: mongoose.Schema.Types.ObjectId,
-				ref: 'group',
-			},
-		],
 		events: [
 			{
 				type: mongoose.Schema.Types.ObjectId,

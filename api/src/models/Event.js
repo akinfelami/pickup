@@ -7,7 +7,6 @@ const eventSchema = new mongoose.Schema(
 			required: true,
 			minLength: [10, 'Must be at least 10 characters long'],
 		},
-		owner: { type: Schema.Types.ObjectId, ref: 'user' },
 		description: {
 			type: Text,
 			required: true,
@@ -20,7 +19,14 @@ const eventSchema = new mongoose.Schema(
 				ref: 'user',
 			},
 		],
-		date: { type: Date },
+		comments: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'comment',
+			},
+		],
+		date: { type: Date, required: true },
+		time: { type: Date, required: true },
 		location: { type: String },
 		organizer: {
 			type: mongoose.Schema.Types.ObjectId,
