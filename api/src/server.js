@@ -6,8 +6,8 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const port = process.env.PORT || 3000;
 const app = express();
-const userRouter = require('./routes/user');
-const groupRouter = require('./routes/group');
+const userRouter = require('./modules/users/UserRoutes');
+const eventRouter = require('./modules/events/EventRoutes');
 
 app.use(cors());
 app.use(cookieParser());
@@ -25,8 +25,8 @@ const connectDb = async () => {
 };
 
 // Router Middleware
-app.use('/', userRouter);
-app.use('/', groupRouter);
+app.use('/user', userRouter);
+app.use('/event/', eventRouter);
 
 app.get('/', (req, res) => {
 	res.send("<h1 style='text-align:center; margin-top:50px'>We are live!</h1>");
