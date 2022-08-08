@@ -8,6 +8,7 @@ const port = process.env.PORT || 3000;
 const app = express();
 const userRouter = require('./modules/users/UserRoutes');
 const eventRouter = require('./modules/events/EventRoutes');
+const commentRouter = require('./modules/comments/commentRoute');
 
 app.use(cors());
 app.use(cookieParser());
@@ -26,7 +27,8 @@ const connectDb = async () => {
 
 // Router Middleware
 app.use('/user', userRouter);
-app.use('/event/', eventRouter);
+app.use('/event', eventRouter);
+app.use('/comment', commentRouter);
 
 app.get('/', (req, res) => {
 	res.send("<h1 style='text-align:center; margin-top:50px'>We are live!</h1>");
