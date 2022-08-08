@@ -1,12 +1,12 @@
-const Event = require('../models/Event');
-const User = require('../models/User');
-const Comment = require('../models/Comment');
+const Event = require('../../models/Event');
+const User = require('../../models/User');
+const Comment = require('../../models/Comment');
 
 const getComment = async (req, res) => {
 	try {
 		const comment = await Comment.findById(req.params.commentId).lean().exec();
 
-		res.staus(200).json(comment);
+		res.status(200).json(comment);
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
@@ -26,10 +26,13 @@ const createComment = async (req, res) => {
 
 		await comment.save();
 
-		// Double Check
-		event.comments = comment;
+		await Event.findByIdAndUpdate(
+			req.params.eventId,
+			{ $push: { comments: comment } },
+			{ new: true, upsert: true }
+		);
 
-		res.staus(200).json(comment);
+		res.status(200).json(comment);
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
@@ -41,7 +44,7 @@ const deleteComment = async (req, res) => {
 
 		await Event.findByIdAndUpdate(
 			req.params.eventId,
-			{ $pull: { comments: comment } },
+			{ $pull: { comments: req.params.commentId } },
 			{ new: true, upsert: true }
 		);
 
@@ -52,3 +55,5 @@ const deleteComment = async (req, res) => {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
 };
+
+module.exports = { getComment, createComment, deleteComment };

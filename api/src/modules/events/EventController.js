@@ -1,5 +1,5 @@
-const Event = require('../models/Event');
-const User = require('../models/User');
+const Event = require('../../models/Event');
+const User = require('../../models/User');
 
 const getEvent = async (req, res) => {
 	try {
@@ -14,6 +14,16 @@ const getAllUserEvent = async (req, res) => {
 	try {
 		const user = await User.findById(req.params.userId).lean().exec();
 		res.status(200).json(user.events);
+	} catch (err) {
+		res.status(400).json({ status: 'failed', message: err.message });
+	}
+};
+
+const getAllEvents = async (req, res) => {
+	try {
+		const allEvents = await Event.find({}).sort({ createdAt: -1 });
+
+		res.status(200).send(allEvents);
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
@@ -66,19 +76,19 @@ const rsvpUser = async (req, res) => {
 			return res.status(409).send('You already rsvped for this event!');
 		}
 
-		await Event.findByIdAndUpdate(
+		const updatedEvent = await Event.findByIdAndUpdate(
 			req.params.eventId,
 			{ $push: { rsvp: user } },
 			{ new: true, upsert: true }
 		);
 
-		await User.findByIdAndUpdate(
+		const updatedUser = await User.findByIdAndUpdate(
 			req.params.userId,
 			{ $push: { events: event } },
 			{ new: true, upsert: true }
 		);
 
-		res.status(200).json(event);
+		res.status(200).json(updatedEvent);
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
@@ -97,19 +107,19 @@ const UnRsvpUser = async (req, res) => {
 			return res.status(409).send('You have not rsvped for this event!');
 		}
 
-		await Event.findByIdAndUpdate(
+		const updatedEvent = await Event.findByIdAndUpdate(
 			req.params.eventId,
-			{ $pull: { rsvp: user } },
+			{ $pull: { rsvp: user._id } },
 			{ new: true, upsert: true }
 		);
 
-		await User.findByIdAndUpdate(
+		const updatedUser = await User.findByIdAndUpdate(
 			req.params.userId,
-			{ $pull: { events: event } },
+			{ $pull: { events: event._id } },
 			{ new: true, upsert: true }
 		);
 
-		res.status(200).json(event);
+		res.status(200).json(updatedEvent);
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
@@ -118,23 +128,22 @@ const UnRsvpUser = async (req, res) => {
 const rescheduleEvent = async (req, res) => {
 	// User can only change time / date
 
-	const { date, time } = req.body;
 	try {
+		const { date, time } = req.body;
+
 		const event = await Event.findById(req.params.eventId).lean().exec();
-		const user = await User.findById(req.params.userId).lean().exec();
 
 		if (event.organizer._id != req.params.userId) {
 			return res.status(409).send('You are not the event organizer!');
 		}
 
-		await Event.findByIdAndUpdate(
+		const updatedEvent = await Event.findByIdAndUpdate(
 			req.params.eventId,
-			{ time: time },
-			{ date: date },
+			{ time: time, date: date },
 			{ new: true, upsert: true }
 		);
 
-		res.status(200).json(event);
+		res.status(200).json(updatedEvent);
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
@@ -156,10 +165,13 @@ const deleteEvent = async (req, res) => {
 	}
 };
 
-(module.exports = getEvent),
+module.exports = {
+	getEvent,
 	getAllUserEvent,
 	createEvent,
 	rsvpUser,
 	UnRsvpUser,
 	rescheduleEvent,
-	deleteEvent;
+	deleteEvent,
+	getAllEvents,
+};
