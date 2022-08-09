@@ -83,8 +83,20 @@ const loginUser = async (req, res) => {
 			res.status(400).send('All input required');
 		}
 
-		const user = await User.findOne({ email });
-		if (user && (await bcrypt.compare(password, user.password))) {
+		const user = User.findOne({ email: email });
+
+		if (!user) {
+			return res.status(401).send({
+				msg:
+					'The email address ' + email + ' is not associated with any account',
+			});
+		}
+
+		if (
+			user &&
+			(await bcrypt.compare(password, user.password)) &&
+			user.active
+		) {
 			const token = jwt.sign(
 				{ user_id: user._id, email },
 				process.env.TOKEN_KEY
