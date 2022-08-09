@@ -6,9 +6,9 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const port = process.env.PORT || 3000;
 const app = express();
-const userRouter = require('./modules/users/UserRoutes');
-const eventRouter = require('./modules/events/EventRoutes');
-const commentRouter = require('./modules/comments/CommentRoutes');
+const userRouter = require('./src/modules/users/UserRoutes');
+const eventRouter = require('./src/modules/events/EventRoutes');
+const commentRouter = require('./src/modules/comments/CommentRoutes');
 
 app.use(cors());
 app.use(cookieParser());
