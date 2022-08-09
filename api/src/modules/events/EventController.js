@@ -1,9 +1,17 @@
 const Event = require('../../models/Event');
 const User = require('../../models/User');
+const RecentEvents = require('../../models/RecentEvents');
 
 const getEvent = async (req, res) => {
 	try {
 		const event = await Event.findById(req.params.eventId).lean().exec();
+
+		const isEventDeleted = await RecentEvents.find({
+			recentlyDeleted: event._id,
+		});
+		if (isEventDeleted.length > 0) {
+			return res.status(401).send('Oops! This event has been deleted');
+		}
 		res.status(200).json(event);
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
@@ -156,6 +164,12 @@ const deleteEvent = async (req, res) => {
 		if (event.organizer._id != req.params.userId) {
 			return res.status(409).send('You are not the event organizer!');
 		}
+
+		const recent = new RecentEvents({
+			event: event._id,
+		});
+
+		await recent.save();
 
 		await Event.findByIdAndDelete(req.params.eventId).lean().exec();
 
