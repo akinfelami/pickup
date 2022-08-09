@@ -31,7 +31,7 @@ app.use('/event', eventRouter);
 app.use('/comment', commentRouter);
 
 app.get('/', (req, res) => {
-	res.send("<h1 style='text-align:center; margin-top:50px'>We are live!</h1>");
+	res.status(200).json({ msg: 'Success' });
 });
 
 app.use('*', (req, res) => {
