@@ -57,7 +57,7 @@ const createEvent = async (req, res) => {
 			{ new: true, upsert: true }
 		);
 
-		res.status(200).json(event);
+		res.status(201).json(event);
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}

@@ -32,7 +32,7 @@ const createComment = async (req, res) => {
 			{ new: true, upsert: true }
 		);
 
-		res.status(200).json(comment);
+		res.status(201).json(comment);
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
