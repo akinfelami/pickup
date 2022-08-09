@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
 		email: { type: String, required: true, unique: true },
 		password: { type: String, required: true },
 		profile_pic: { type: String, default: y },
+		active: { type: Boolean, default: false },
 		events: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
