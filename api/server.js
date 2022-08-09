@@ -31,7 +31,7 @@ app.use('/event', eventRouter);
 app.use('/comment', commentRouter);
 
 app.get('/', (req, res) => {
-	res.status(200).json({ status: 'Success', message: "We're live" });
+	res.status(200).json({ status: 'Success', message: 'Hello, World' });
 });
 
 app.use('*', (req, res) => {
