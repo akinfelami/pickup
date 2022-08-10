@@ -4,7 +4,10 @@ const RecentEvents = require('../../models/RecentEvents');
 
 const getEvent = async (req, res) => {
 	try {
-		const event = await Event.findById(req.params.eventId).lean().exec();
+		const event = await Event.findById(req.params.eventId)
+			.cache({ expire: 10 })
+			.lean()
+			.exec();
 
 		res.status(200).json(event);
 	} catch (err) {
