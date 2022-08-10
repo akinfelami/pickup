@@ -46,7 +46,6 @@ mongoose.Query.prototype.exec = async function () {
 		return result;
 	}
 
-	// return found cachedValue
 	const doc = JSON.parse(cacheValue);
 	console.log('Return data from Redis');
 	return Array.isArray(doc)
