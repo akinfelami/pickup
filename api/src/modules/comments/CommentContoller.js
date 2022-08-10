@@ -4,7 +4,10 @@ const Comment = require('../../models/Comment');
 
 const getComment = async (req, res) => {
 	try {
-		const comment = await Comment.findById(req.params.commentId).lean().exec();
+		const comment = await Comment.findById(req.params.commentId)
+			.cache({ expire: 10 })
+			.lean()
+			.exec();
 
 		res.status(200).json(comment);
 	} catch (err) {

@@ -8,7 +8,10 @@ const getWelcome = async (req, res) => {
 
 const getUser = async (req, res) => {
 	try {
-		const user = await User.findById(req.params.userId).lean().exec();
+		const user = await User.findById(req.params.userId)
+			.cache({ expire: 10 })
+			.lean()
+			.exec();
 		res.status(200).json({
 			id: user._id,
 			name: user.username,
@@ -24,7 +27,9 @@ const getUser = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
 	try {
-		const allUsers = await User.find({}).sort({ createdAt: -1 });
+		const allUsers = await User.find({})
+			.cache({ expire: 10 })
+			.sort({ createdAt: -1 });
 		res.status(200).json(allUsers);
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
