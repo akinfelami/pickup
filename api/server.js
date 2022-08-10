@@ -10,6 +10,8 @@ const userRouter = require('./src/modules/users/UserRoutes');
 const eventRouter = require('./src/modules/events/EventRoutes');
 const commentRouter = require('./src/modules/comments/CommentRoutes');
 
+require('./src/utils/redis');
+
 app.use(cors());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));

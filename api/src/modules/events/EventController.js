@@ -4,14 +4,11 @@ const RecentEvents = require('../../models/RecentEvents');
 
 const getEvent = async (req, res) => {
 	try {
-		const event = await Event.findById(req.params.eventId).lean().exec();
+		const event = await Event.findById(req.params.eventId)
+			.cache({ expire: 10 })
+			.lean()
+			.exec();
 
-		const isEventDeleted = await RecentEvents.find({
-			recentlyDeleted: event._id,
-		});
-		if (isEventDeleted.length > 0) {
-			return res.status(401).send('Oops! This event has been deleted');
-		}
 		res.status(200).json(event);
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
@@ -20,7 +17,10 @@ const getEvent = async (req, res) => {
 
 const getAllUserEvent = async (req, res) => {
 	try {
-		const user = await User.findById(req.params.userId).lean().exec();
+		const user = await User.findById(req.params.userId)
+			.cache({ expire: 10 })
+			.lean()
+			.exec();
 		res.status(200).json(user.events);
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
@@ -29,7 +29,9 @@ const getAllUserEvent = async (req, res) => {
 
 const getAllEvents = async (req, res) => {
 	try {
-		const allEvents = await Event.find({}).sort({ createdAt: -1 });
+		const allEvents = await Event.find({})
+			.cache({ expire: 10 })
+			.sort({ createdAt: -1 });
 
 		res.status(200).send(allEvents);
 	} catch (err) {
