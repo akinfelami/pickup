@@ -62,9 +62,9 @@ const updateUserInterests = async (req, res) => {
 
 const registerUser = async (req, res) => {
 	try {
-		const { firstName, lastName, username, email, password } = req.body;
+		const { firstname, lastname, username, email, password } = req.body;
 
-		if (!(email && password && username)) {
+		if (!(email && password && firstname && lastname)) {
 			return res.status(400).send('All input required');
 		}
 
@@ -77,9 +77,9 @@ const registerUser = async (req, res) => {
 		var encryptedPassword = await bcrypt.hash(password, 10);
 
 		const user = new User({
-			username: username || `${firstName}' '${lastName}`,
-			firstName,
-			lastName,
+			username: username || `${firstname} ${lastname}`,
+			firstName: firstname,
+			lastName: lastname,
 			email: email.toLowerCase(),
 			password: encryptedPassword,
 		});
@@ -114,6 +114,8 @@ const loginUser = async (req, res) => {
 
 		const user = User.findOne({ email: email });
 
+		console.log(user._id);
+
 		if (!user) {
 			return res.status(401).send({
 				msg:
@@ -146,8 +148,7 @@ const loginUser = async (req, res) => {
 			});
 		}
 	} catch (err) {
-		console.error(err);
-		res.status(400).send('Invalid Credentials');
+		res.status(400).json({ status: 'failed', message: err.message });
 	}
 };
 
@@ -156,7 +157,7 @@ const logoutUser = async (req, res) => {
 		res.cookie('jwt', '', { maxAge: 1 });
 		res.send({ msg: 'You have been logged out' });
 	} catch (err) {
-		res.send({ msg: err });
+		res.status(400).json({ status: 'failed', message: err.message });
 	}
 };
 
