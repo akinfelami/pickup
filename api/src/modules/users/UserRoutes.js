@@ -5,8 +5,8 @@ const userController = require('./UserController');
 
 router.get('/', auth, userController.getWelcome);
 router.get('/get/:userId', auth, userController.getUser);
-router.post('/update/:userId', userController.updateAboutUser);
-router.post('/interests/:userId', userController.updateUserInterests);
+router.post('/update/:userId', auth, userController.updateAboutUser);
+router.post('/interests/:userId', auth, userController.updateUserInterests);
 router.post('/register', userController.registerUser);
 router.post('/login', userController.loginUser);
 router.get('/logout', auth, userController.logoutUser);
