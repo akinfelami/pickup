@@ -41,7 +41,7 @@ const getAllEvents = async (req, res) => {
 
 const createEvent = async (req, res) => {
 	try {
-		const { title, description, tags, location, time, date } = req.body;
+		const { title, description, tags, location, time, date, spots } = req.body;
 
 		if (!(title && description && location)) {
 			return res.status(400).send('All input required');
@@ -53,6 +53,7 @@ const createEvent = async (req, res) => {
 			title,
 			description,
 			tags,
+			spots,
 			time,
 			date,
 			location,
@@ -135,9 +136,9 @@ const UnRsvpUser = async (req, res) => {
 	}
 };
 
-const rescheduleEvent = async (req, res) => {
+const updateEvent = async (req, res) => {
 	try {
-		const { date, time } = req.body;
+		const { date, time, photo } = req.body;
 
 		const event = await Event.findById(req.params.eventId).lean().exec();
 
@@ -147,7 +148,7 @@ const rescheduleEvent = async (req, res) => {
 
 		const updatedEvent = await Event.findByIdAndUpdate(
 			req.params.eventId,
-			{ time: time, date: date },
+			{ time: time, date: date, $push: { photos: photo } },
 			{ new: true, upsert: true }
 		);
 
@@ -185,7 +186,7 @@ module.exports = {
 	createEvent,
 	rsvpUser,
 	UnRsvpUser,
-	rescheduleEvent,
+	updateEvent,
 	deleteEvent,
 	getAllEvents,
 };
