@@ -10,6 +10,7 @@ const eventSchema = new mongoose.Schema(
 		eventImage: {
 			type: String,
 		},
+		spots: { type: Number, default: Infinity },
 		photos: { type: Array, default: [] },
 		fee: { type: Number },
 		description: {
