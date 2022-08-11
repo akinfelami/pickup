@@ -1,5 +1,5 @@
 var jwt = require('jsonwebtoken');
-var bcrypt = require('bcryptjs');
+var bcrypt = require('bcrypt');
 const User = require('../../models/User');
 
 const getWelcome = async (req, res) => {
@@ -46,13 +46,11 @@ const updateUserInterests = async (req, res) => {
 	try {
 		const { interests } = req.body;
 
-		await interests.map((interest) => {
-			User.findByIdAndUpdate(
-				req.params.userId,
-				{ $push: { interests: interest } },
-				{ new: true, upsert: true }
-			);
-		});
+		await User.findByIdAndUpdate(
+			req.params.userId,
+			{ $push: { interests: interests } },
+			{ new: true, upsert: true }
+		);
 
 		res.status(201).json({ status: 'Success' });
 	} catch (err) {
@@ -122,11 +120,7 @@ const loginUser = async (req, res) => {
 			});
 		}
 
-		if (
-			user &&
-			(await bcrypt.compare(password, user.password)) &&
-			user.active
-		) {
+		if (user && (await bcrypt.compare(password, user.password))) {
 			const token = jwt.sign(
 				{ user_id: user._id, email },
 				process.env.TOKEN_KEY
@@ -134,7 +128,7 @@ const loginUser = async (req, res) => {
 
 			res.cookie('jwt', token, { httpOnly: true });
 
-			res.status(200).json({
+			return res.status(200).json({
 				id: user._id,
 				username: user.username,
 				email: user.email,
@@ -145,6 +139,8 @@ const loginUser = async (req, res) => {
 				interests: user.interests,
 				createdAt: user.createdAt,
 			});
+		} else {
+			res.status(400).send('Invalid credentials');
 		}
 	} catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
