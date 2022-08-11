@@ -5,11 +5,11 @@ const img =
 const userSchema = new mongoose.Schema(
 	{
 		firstName: { type: String, required: true },
-		LastName: { type: String, required: true },
+		password: { type: String, required: true },
+		lastName: { type: String, required: true },
 		username: { type: String },
 		about: { type: String },
 		email: { type: String, required: true, unique: true },
-		password: { type: String, required: true },
 		profile_pic: { type: String, default: img },
 		active: { type: Boolean, default: false },
 		role: {
