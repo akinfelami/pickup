@@ -27,7 +27,7 @@ const getUser = async (req, res) => {
 	}
 };
 
-const updateUser = async (req, res) => {
+const updateAboutUser = async (req, res) => {
 	try {
 		const { about } = req.body;
 		await User.findByIdAndUpdate(
@@ -35,6 +35,24 @@ const updateUser = async (req, res) => {
 			{ about: about },
 			{ new: true, upsert: true }
 		);
+
+		res.status(201).json({ status: 'Success' });
+	} catch (err) {
+		res.status(400).json({ status: 'failed', message: err.message });
+	}
+};
+
+const updateUserInterests = async (req, res) => {
+	try {
+		const { interests } = req.body;
+
+		await interests.map((interest) => {
+			User.findByIdAndUpdate(
+				req.params.userId,
+				{ $push: { interests: interest } },
+				{ new: true, upsert: true }
+			);
+		});
 
 		res.status(201).json({ status: 'Success' });
 	} catch (err) {
@@ -143,7 +161,8 @@ const logoutUser = async (req, res) => {
 };
 
 module.exports = {
-	updateUser,
+	updateUserInterests,
+	updateAboutUser,
 	getWelcome,
 	getUser,
 	registerUser,
