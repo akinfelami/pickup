@@ -35,7 +35,13 @@ const eventSchema = new mongoose.Schema(
 		},
 		status: {
 			type: String,
-			default: 'Upcoming',
+			enum: ['upcoming', 'past'],
+			default: 'upcoming',
+		},
+		type: {
+			type: String,
+			enum: ['recurring, non-recurring'],
+			default: 'non-recurring',
 		},
 	},
 	{

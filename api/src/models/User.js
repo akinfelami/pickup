@@ -9,6 +9,11 @@ const userSchema = new mongoose.Schema(
 		password: { type: String, required: true },
 		profile_pic: { type: String, default: img },
 		active: { type: Boolean, default: false },
+		role: {
+			type: String,
+			enum: ['user', 'admin'],
+			default: 'user',
+		},
 		events: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
