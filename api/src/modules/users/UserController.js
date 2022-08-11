@@ -62,9 +62,9 @@ const updateUserInterests = async (req, res) => {
 
 const registerUser = async (req, res) => {
 	try {
-		const { firstname, lastname, username, email, password } = req.body;
+		const { firstName, lastName, username, email, password } = req.body;
 
-		if (!(email && password && firstname && lastname)) {
+		if (!(email && password && firstName && lastName)) {
 			return res.status(400).send('All input required');
 		}
 
@@ -77,9 +77,9 @@ const registerUser = async (req, res) => {
 		var encryptedPassword = await bcrypt.hash(password, 10);
 
 		const user = new User({
-			username: username || `${firstname} ${lastname}`,
-			firstName: firstname,
-			lastName: lastname,
+			username: username || `${firstName} ${lastName}`,
+			firstName,
+			lastName,
 			email: email.toLowerCase(),
 			password: encryptedPassword,
 		});
@@ -108,13 +108,12 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
 	try {
 		const { email, password } = req.body;
+
 		if (!(email && password)) {
-			res.status(400).send('All input required');
+			return res.status(400).send('All input required');
 		}
 
-		const user = User.findOne({ email: email });
-
-		console.log(user._id);
+		const user = await User.findOne({ email });
 
 		if (!user) {
 			return res.status(401).send({
