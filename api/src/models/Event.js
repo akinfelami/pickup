@@ -7,6 +7,11 @@ const eventSchema = new mongoose.Schema(
 			required: true,
 			minLength: [10, 'Must be at least 10 characters long'],
 		},
+		eventImage: {
+			type: String,
+		},
+		photos: { type: Array, default: [] },
+		fee: { type: Number },
 		description: {
 			type: String,
 			required: true,

@@ -136,8 +136,6 @@ const UnRsvpUser = async (req, res) => {
 };
 
 const rescheduleEvent = async (req, res) => {
-	// User can only change time / date
-
 	try {
 		const { date, time } = req.body;
 
