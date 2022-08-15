@@ -1,11 +1,14 @@
-import { View, Text, KeyboardAvoidingView } from 'react-native';
-import { Image, Input, Button } from 'react-native-elements';
+import { View, KeyboardAvoidingView } from 'react-native';
+import { Image, Text, Input, Button } from 'react-native-elements';
 import React, { useState } from 'react';
 import { Link } from '@react-navigation/native';
 
 const Login = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+	const [isLoggedIn, setisLoggedIn] = useState(false);
+
+	const loginUser = () => {};
 
 	return (
 		<KeyboardAvoidingView
@@ -20,6 +23,7 @@ const Login = () => {
 				/>
 				<View style={{ width: 350 }}>
 					<Input
+						textContentType='username'
 						placeholder='Email'
 						autoFocus
 						type='email'
@@ -29,13 +33,15 @@ const Login = () => {
 
 					<Input
 						placeholder='Password'
+						textContentType='password'
 						secureTextEntry
 						type='password'
 						value={password}
 						onChangeText={(text) => setPassword(text)}
+						onSubmitEditing={loginUser}
 					/>
 				</View>
-				<Button title='Login' style={{ width: 200 }} />
+				<Button onPress={loginUser} title='Login' style={{ width: 200 }} />
 				<View className='pt-1 items-center'>
 					<Text className='pt-2'>
 						Don't have an account?{' '}
