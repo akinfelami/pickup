@@ -74,18 +74,19 @@ const registerUser = async (req, res) => {
 
 		var encryptedPassword = await bcrypt.hash(password, 10);
 
-		const user = new User({
-			username: `${firstName} ${lastName}`,
-			firstName,
-			lastName,
-			email: email.toLowerCase(),
-			password: encryptedPassword,
-		});
-
 		const newUser = await admin.auth().createUser({
 			email,
 			password,
 			displayName: `${firstName} ${lastName}`,
+		});
+
+		const user = new User({
+			username: `${firstName} ${lastName}`,
+			firstName,
+			lastName,
+			firebaseId: newUser.uid,
+			email: email.toLowerCase(),
+			password: encryptedPassword,
 		});
 
 		await user.save();
