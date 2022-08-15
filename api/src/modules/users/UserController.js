@@ -1,6 +1,6 @@
-var jwt = require('jsonwebtoken');
 var bcrypt = require('bcrypt');
 const User = require('../../models/User');
+const admin = require('firebase-admin');
 
 const getWelcome = async (req, res) => {
 	res.status(200).send('Welcome');
@@ -60,7 +60,7 @@ const updateUserInterests = async (req, res) => {
 
 const registerUser = async (req, res) => {
 	try {
-		const { firstName, lastName, username, email, password } = req.body;
+		const { firstName, lastName, email, password } = req.body;
 
 		if (!(email && password && firstName && lastName)) {
 			return res.status(400).send('All input required');
@@ -75,17 +75,18 @@ const registerUser = async (req, res) => {
 		var encryptedPassword = await bcrypt.hash(password, 10);
 
 		const user = new User({
-			username: username || `${firstName} ${lastName}`,
+			username: `${firstName} ${lastName}`,
 			firstName,
 			lastName,
 			email: email.toLowerCase(),
 			password: encryptedPassword,
 		});
 
-		// Create Tokens
-		const token = jwt.sign({ user_id: user._id, email }, process.env.TOKEN_KEY);
-
-		res.cookie('jwt', token, { httpOnly: true });
+		const newUser = await admin.auth().createUser({
+			email,
+			password,
+			displayName: `${firstName} ${lastName}`,
+		});
 
 		await user.save();
 
