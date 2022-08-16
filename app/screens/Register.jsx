@@ -3,6 +3,7 @@ import { Input, Text, Button } from 'react-native-elements';
 import { Link } from '@react-navigation/native';
 import React, { useState, useLayoutEffect } from 'react';
 import axios from 'axios';
+import { auth } from './../firebase';
 
 const Register = ({ navigation }) => {
 	const [email, setEmail] = useState('');
@@ -12,24 +13,44 @@ const Register = ({ navigation }) => {
 	const [lastName, setLastName] = useState('');
 
 	const registerUser = async () => {
-		if (password === confirmPassword) {
-			const data = {
-				email,
-				password,
-				firstName,
-				lastName,
-			};
+		let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+		if (password === confirmPassword && reg.test(email) != false) {
 			try {
+				const data = {
+					email,
+					password,
+					firstName,
+					lastName,
+				};
+				console.log(email);
+				console.log(password);
+				console.log(firstName);
+				console.log(lastName);
 				const response = await axios.post(
-					'http://localhost:3000/user/register',
-					data
+					'https://pickupapi.herokuapp.com/user/register',
+
+					JSON.stringify(data),
+					{
+						headers: {
+							'Content-Type': 'application/json; charset=UTF-8',
+						},
+					}
 				);
-				console.log(response);
+
+				const authUser = await auth.createUserWithEmailAndPassword(
+					email,
+					password
+				);
+				authUser.user.updateProfile({
+					displayName: firstName,
+				});
+				console.log(response.data);
+				return response.data;
 			} catch (err) {
-				console.error(err);
+				console.error(err.message);
 			}
 		} else {
-			alert('Passwords do not match');
+			alert('Your email is invalid or your passwords do not match');
 		}
 	};
 

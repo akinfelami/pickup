@@ -69,16 +69,10 @@ const registerUser = async (req, res) => {
 		const oldUser = await User.findOne({ email });
 
 		if (oldUser) {
-			return res.status(409).send('User already exists. Please Login instead');
+			return res.json({ msg: 'User already exists. Please Login instead' });
 		}
 
 		var encryptedPassword = await bcrypt.hash(password, 10);
-
-		const newUser = await admin.auth().createUser({
-			email,
-			password,
-			displayName: `${firstName} ${lastName}`,
-		});
 
 		const user = new User({
 			username: firstName,
