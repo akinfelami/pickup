@@ -1,5 +1,5 @@
-import * as firebase from 'firebase';
-import 'firebase/auth';
+import * as firebase from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
 	apiKey: 'AIzaSyCkW8GM9nDy0LagJZ4hIOoweiNblXBYqoI',
@@ -12,10 +12,8 @@ const firebaseConfig = {
 	measurementId: 'G-HB6V906YL2',
 };
 
-let app;
+// Double check this for performance issues
+const firebaseApp = firebase.initializeApp(firebaseConfig);
+export const auth = getAuth(firebaseApp);
 
-if (firebase.apps.length === 0) {
-	app = firebase.initializeApp(firebaseConfig);
-} else {
-	app = firebase.app();
-}
+export default firebaseApp;
