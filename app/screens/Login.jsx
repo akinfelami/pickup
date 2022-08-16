@@ -1,14 +1,34 @@
 import { View, KeyboardAvoidingView } from 'react-native';
 import { Image, Text, Input, Button } from 'react-native-elements';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from '@react-navigation/native';
+import { auth } from './../firebase';
 
-const Login = () => {
+const Login = ({ navigation }) => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [isLoggedIn, setisLoggedIn] = useState(false);
 
-	const loginUser = () => {};
+	const loginUser = () => {
+		auth
+			.signInWithEmailAndPassword(email, password)
+			.then((userCredentialer) => {
+				const user = userCredential.user;
+			})
+			.catch((error) => {
+				const errorCode = error.code;
+				const errorMessage = error.message;
+			});
+	};
+
+	useEffect(() => {
+		const unsubcribe = auth.onAuthStateChanged((authUser) => {
+			if (authUser) {
+				navigation.replace('Home');
+			}
+		});
+		return unsubcribe;
+	}, []);
 
 	return (
 		<KeyboardAvoidingView
