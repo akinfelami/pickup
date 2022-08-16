@@ -81,7 +81,7 @@ const registerUser = async (req, res) => {
 		});
 
 		const user = new User({
-			username: `${firstName} ${lastName}`,
+			username: firstName,
 			firstName,
 			lastName,
 			firebaseId: newUser.uid,

@@ -2,6 +2,7 @@ import { View, KeyboardAvoidingView } from 'react-native';
 import { Input, Text, Button } from 'react-native-elements';
 import { Link } from '@react-navigation/native';
 import React, { useState, useLayoutEffect } from 'react';
+import axios from 'axios';
 
 const Register = ({ navigation }) => {
 	const [email, setEmail] = useState('');
@@ -10,7 +11,27 @@ const Register = ({ navigation }) => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 
-	const registerUser = async () => {};
+	const registerUser = async () => {
+		if (password === confirmPassword) {
+			const data = {
+				email,
+				password,
+				firstName,
+				lastName,
+			};
+			try {
+				const response = await axios.post(
+					'http://localhost:3000/user/register',
+					data
+				);
+				console.log(response);
+			} catch (err) {
+				console.error(err);
+			}
+		} else {
+			alert('Passwords do not match');
+		}
+	};
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
