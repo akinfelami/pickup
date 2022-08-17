@@ -7,14 +7,11 @@ import React, { useEffect } from 'react';
 
 const Welcome = ({ navigation }) => {
 	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, (authUser) => {
-			if (authUser) {
-				navigation.replace('Home');
-			} else {
-				navigation.replace('Login');
-			}
-		});
-		return unsubscribe;
+		if (auth.currentUser) {
+			navigation.replace('Home');
+		} else {
+			navigation.replace('Login');
+		}
 	}, []);
 
 	return (
