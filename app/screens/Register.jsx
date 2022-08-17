@@ -2,8 +2,9 @@ import { View, KeyboardAvoidingView } from 'react-native';
 import { Input, Text, Button } from 'react-native-elements';
 import { Link } from '@react-navigation/native';
 import React, { useState, useLayoutEffect } from 'react';
-import axios from 'axios';
 import { auth } from './../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { apiBaseUrl } from './../constants';
 
 const Register = ({ navigation }) => {
 	const [email, setEmail] = useState('');
@@ -22,30 +23,29 @@ const Register = ({ navigation }) => {
 					firstName,
 					lastName,
 				};
-				console.log(email);
-				console.log(password);
-				console.log(firstName);
-				console.log(lastName);
-				const response = await axios.post(
-					'https://pickupapi.herokuapp.com/user/register',
 
-					JSON.stringify(data),
-					{
-						headers: {
-							'Content-Type': 'application/json; charset=UTF-8',
-						},
-					}
-				);
-
-				const authUser = await auth.createUserWithEmailAndPassword(
-					email,
-					password
-				);
-				authUser.user.updateProfile({
-					displayName: firstName,
+				const response = await fetch(`${apiBaseUrl}/user/register`, {
+					method: 'POST',
+					headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(data),
 				});
-				console.log(response.data);
-				return response.data;
+				console.log(response.status);
+				if (response.status === 201) {
+					const authUser = await createUserWithEmailAndPassword(
+						auth,
+						email,
+						password
+					);
+					const user = authUser.user;
+				} else {
+					alert(
+						'We were unable to register you. You might\
+						already have an account. Login instead or try again later'
+					);
+				}
 			} catch (err) {
 				console.error(err.message);
 			}
