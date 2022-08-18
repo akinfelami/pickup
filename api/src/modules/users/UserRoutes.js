@@ -6,9 +6,9 @@ const userController = require('./UserController');
 router.get('/', auth, userController.getWelcome);
 router.get('/get/:userId', auth, userController.getUser);
 router.post('/update/:userId', auth, userController.updateAboutUser);
-router.put('/update/firebase/:userId', auth, userController.updateFirebaseId);
+router.post('/update/firebase/:userId', auth, userController.updateFirebaseId);
 router.post('/interests/:userId', auth, userController.updateUserInterests);
-router.post('/register', userController.registerUser);
+router.post('/register/:fireId', userController.registerUser);
 router.post('/login', userController.loginUser);
 router.get('/logout', auth, userController.logoutUser);
 
