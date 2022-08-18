@@ -8,7 +8,6 @@ const userSchema = new mongoose.Schema(
 		lastName: { type: String, required: true },
 		password: { type: String, required: true },
 		username: { type: String },
-		firebaseId: { type: String },
 		about: { type: String },
 		email: { type: String, required: true, unique: true },
 		profile_pic: { type: String, default: img },
