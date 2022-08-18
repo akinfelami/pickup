@@ -37,7 +37,7 @@ const Register = ({ navigation }) => {
 				});
 
 				if (response.status === 201) {
-					const userData = response.json();
+					const userData = await response.json();
 					console.log(userData);
 					const authUser = await createUserWithEmailAndPassword(
 						auth,
