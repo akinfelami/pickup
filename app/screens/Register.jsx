@@ -1,4 +1,4 @@
-import { View, KeyboardAvoidingView } from 'react-native';
+import { View, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
 import { Input, Text, Button } from 'react-native-elements';
 import { Link } from '@react-navigation/native';
 import React, { useState, useLayoutEffect } from 'react';
@@ -32,7 +32,7 @@ const Register = ({ navigation }) => {
 					},
 					body: JSON.stringify(data),
 				});
-				console.log(response.status);
+
 				if (response.status === 201) {
 					const authUser = await createUserWithEmailAndPassword(
 						auth,
@@ -110,6 +110,14 @@ const Register = ({ navigation }) => {
 					title='Register'
 					style={{ width: 250 }}
 				/>
+				<View className='pt-4 items-center flex-row space-x-1'>
+					<Text>Already have an account? </Text>
+					<TouchableOpacity>
+						<Link to={{ screen: 'Login' }}>
+							<Text className='underline text-sky-400'>Login</Text>
+						</Link>
+					</TouchableOpacity>
+				</View>
 			</View>
 
 			<View style={{ width: 100 }}></View>

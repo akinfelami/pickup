@@ -16,12 +16,17 @@ export default function App() {
 		<NavigationContainer>
 			<TailwindProvider>
 				<Stack.Navigator>
-					<Stack.Screen name='Login' component={Login} />
 					<Stack.Screen
 						options={{ headerShown: false }}
 						name='Welcome'
 						component={Welcome}
 					/>
+					<Stack.Screen
+						options={{ headerShown: false }}
+						name='Login'
+						component={Login}
+					/>
+
 					<Stack.Screen name='Register' component={Register} />
 					<Stack.Screen
 						options={{ headerShown: false }}

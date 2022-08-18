@@ -17,15 +17,24 @@ import LoadingComponent from '../components/LoadingComponent';
 const Login = ({ navigation }) => {
 	const [loading, setIsLoading] = useState(false);
 
+	// useEffect(() => {
+	// 	const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+	// 		if (authUser) {
+	// 			navigation.replace('Home');
+	// 		} else {
+	// 			navigation.replace('Login');
+	// 		}
+	// 	});
+	// 	return unsubscribe;
+	// }, []);
+
 	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, (authUser) => {
+		const unsub = onAuthStateChanged(auth, (authUser) => {
 			if (authUser) {
 				navigation.replace('Home');
-			} else {
-				navigation.replace('Login');
 			}
 		});
-		return unsubscribe;
+		return unsub;
 	}, []);
 
 	const [email, setEmail] = useState('');
@@ -34,15 +43,12 @@ const Login = ({ navigation }) => {
 	const height = useHeaderHeight();
 
 	const loginUser = () => {
-		setIsLoading(true);
 		signInWithEmailAndPassword(auth, email, password)
 			.then((userCredential) => {
 				const user = userCredential.user;
-				setIsLoading(false);
 			})
 			.catch((error) => {
-				const errorCode = error.code;
-				const errorMessage = error.message;
+				alert(error.code);
 			});
 	};
 

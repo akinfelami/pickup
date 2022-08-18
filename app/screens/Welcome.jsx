@@ -25,9 +25,9 @@ const Welcome = ({ navigation }) => {
 					style={{ width: 200, height: 200 }}
 				/>
 				{/* Commented out code used for testing */}
-				<Button
+				{/* <Button
 					title='Login'
-					onPress={() => navigation.replace('Login')}></Button>
+					onPress={() => navigation.replace('Login')}></Button> */}
 			</View>
 		</SafeAreaView>
 	);
