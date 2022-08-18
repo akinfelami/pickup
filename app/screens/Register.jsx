@@ -38,7 +38,7 @@ const Register = ({ navigation }) => {
 
 				if (response.status === 201) {
 					const userData = await response.json();
-					console.log(userData);
+
 					const authUser = await createUserWithEmailAndPassword(
 						auth,
 						email,
@@ -46,16 +46,16 @@ const Register = ({ navigation }) => {
 					);
 					currentUser = auth.currentUser;
 
-					// await fetch(`${apiBaseUrl}/user/update/firebase/${userId}`, {
-					// 	method: 'PUT',
-					// 	headers: {
-					// 		Accept: 'application/json',
-					// 		'Content-Type': 'application/json',
-					// 	},
-					// 	body: {
-					// 		firebaseId: auth.currentUser.uid,
-					// 	},
-					// });
+					await fetch(`${apiBaseUrl}/user/update/firebase/${userData.id}`, {
+						method: 'PUT',
+						headers: {
+							Accept: 'application/json',
+							'Content-Type': 'application/json',
+						},
+						body: {
+							firebaseId: auth.currentUser.uid,
+						},
+					});
 				} else {
 					alert(
 						'We were unable to register you. You might\
