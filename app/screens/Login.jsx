@@ -12,8 +12,11 @@ import { Link } from '@react-navigation/native';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { auth } from './../firebase';
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
+import LoadingComponent from '../components/LoadingComponent';
 
 const Login = ({ navigation }) => {
+	const [loading, setIsLoading] = useState(false);
+
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, (authUser) => {
 			if (authUser) {
@@ -27,14 +30,15 @@ const Login = ({ navigation }) => {
 
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-	const [isLoggedIn, setisLoggedIn] = useState(false);
 
 	const height = useHeaderHeight();
 
 	const loginUser = () => {
+		setIsLoading(true);
 		signInWithEmailAndPassword(auth, email, password)
-			.then((userCredentialer) => {
+			.then((userCredential) => {
 				const user = userCredential.user;
+				setIsLoading(false);
 			})
 			.catch((error) => {
 				const errorCode = error.code;
@@ -47,59 +51,63 @@ const Login = ({ navigation }) => {
 			keyboardVerticalOffset={height + 64}
 			behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
 			className='flex-1'>
-			<SafeAreaView className='flex-1'>
-				<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-					<View>
-						<View className='justify-items-center items-center flex-1 pt-8'>
-							<Image
-								source={require('../assets/pickup.png')}
-								style={{ width: 300, height: 300 }}
-							/>
-
-							<View style={{ width: 350 }}>
-								<Input
-									textContentType='username'
-									placeholder='Email'
-									autoFocus
-									type='email'
-									value={email}
-									onChangeText={(text) => setEmail(text)}
+			{!loading && (
+				<SafeAreaView className='flex-1'>
+					<TouchableWithoutFeedback
+						onPress={Keyboard.dismiss}
+						accessible={false}>
+						<View>
+							<View className='justify-items-center items-center flex-1 pt-8'>
+								<Image
+									source={require('../assets/pickup.png')}
+									style={{ width: 300, height: 300 }}
 								/>
 
-								<Input
-									placeholder='Password'
-									textContentType='password'
-									secureTextEntry
-									type='password'
-									value={password}
-									onChangeText={(text) => setPassword(text)}
-									onSubmitEditing={loginUser}
-								/>
-							</View>
-							<Button
-								onPress={loginUser}
-								title='Login'
-								style={{ width: 200 }}
-							/>
-							<View className='pt-4 items-center flex-row space-x-1'>
-								<Text>Don't have an account? </Text>
-								<TouchableOpacity>
-									<Link to={{ screen: 'Register' }}>
-										<Text className='underline text-sky-400'>
-											Register here
-										</Text>
-									</Link>
-								</TouchableOpacity>
-							</View>
-							<Text className='pt-2 underline text-sky-400'>
-								Forgot Password
-							</Text>
+								<View style={{ width: 350 }}>
+									<Input
+										textContentType='username'
+										placeholder='Email'
+										autoFocus
+										type='email'
+										value={email}
+										onChangeText={(text) => setEmail(text)}
+									/>
 
-							<View style={{ flex: 1 }} />
+									<Input
+										placeholder='Password'
+										textContentType='password'
+										secureTextEntry
+										type='password'
+										value={password}
+										onChangeText={(text) => setPassword(text)}
+										onSubmitEditing={loginUser}
+									/>
+								</View>
+								<Button
+									onPress={loginUser}
+									title='Login'
+									style={{ width: 200 }}
+								/>
+								<View className='pt-4 items-center flex-row space-x-1'>
+									<Text>Don't have an account? </Text>
+									<TouchableOpacity>
+										<Link to={{ screen: 'Register' }}>
+											<Text className='underline text-sky-400'>
+												Register here
+											</Text>
+										</Link>
+									</TouchableOpacity>
+								</View>
+								<Text className='pt-2 underline text-sky-400'>
+									Forgot Password
+								</Text>
+
+								<View style={{ flex: 1 }} />
+							</View>
 						</View>
-					</View>
-				</TouchableWithoutFeedback>
-			</SafeAreaView>
+					</TouchableWithoutFeedback>
+				</SafeAreaView>
+			)}
 		</KeyboardAvoidingView>
 	);
 };
