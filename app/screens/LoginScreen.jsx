@@ -11,9 +11,8 @@ import { Image, Text, Input, Button } from 'react-native-elements';
 import React, { useState, useEffect } from 'react';
 import { Link } from '@react-navigation/native';
 import { useHeaderHeight } from '@react-navigation/elements';
-import { auth } from './../firebase';
+import { auth } from '../firebase';
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
-import LoadingComponent from '../components/LoadingComponent';
 
 const Login = ({ navigation }) => {
 	const [loading, setIsLoading] = useState(false);
