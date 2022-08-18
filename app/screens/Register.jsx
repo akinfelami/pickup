@@ -14,6 +14,8 @@ const Register = ({ navigation }) => {
 	const [lastName, setLastName] = useState('');
 	const [loading, setIsLoading] = useState(false);
 
+	let currentUser;
+
 	const registerUser = async () => {
 		let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
 		if (password === confirmPassword && reg.test(email) != false) {
@@ -33,21 +35,35 @@ const Register = ({ navigation }) => {
 					},
 					body: JSON.stringify(data),
 				});
-				console.log(response.status);
 
 				if (response.status === 201) {
+					const userData = response.json();
+					const userId = userData.id;
+					console.log(userId);
 					const authUser = await createUserWithEmailAndPassword(
 						auth,
 						email,
 						password
 					);
-					const user = authUser.user;
+					currentUser = auth.currentUser;
+
+					await fetch(`${apiBaseUrl}/user/update/firebase/${userId}`, {
+						method: 'PUT',
+						headers: {
+							Accept: 'application/json',
+							'Content-Type': 'application/json',
+						},
+						body: {
+							firebaseId: auth.currentUser.uid,
+						},
+					});
 				} else {
 					alert(
 						'We were unable to register you. You might\
 						already have an account. Login instead or try again later'
 					);
 				}
+
 				setIsLoading(false);
 			} catch (err) {
 				console.error(err.message);
