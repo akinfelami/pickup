@@ -4,13 +4,10 @@ import { auth } from './../firebase';
 import { signOut } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { apiBaseUrl } from './../constants';
-import axios from 'axios';
 
 const Home = ({ navigation }) => {
-	let userData;
-
-	const [username, setUsername] = useState('User');
-
+	const [userData, setUserData] = useState({});
+	const [userName, setUserName] = useState('');
 	const signOutUser = async () => {
 		try {
 			await signOut(auth);
@@ -31,8 +28,9 @@ const Home = ({ navigation }) => {
 				`${apiBaseUrl}/user/get/${auth.currentUser.uid}`,
 				{ headers: { authorization: `Bearer ${token}` } }
 			);
-			userData = await response.json();
-			setUsername(userData.displayName);
+			const data = await response.json();
+			setUserData(data);
+			setUserName(data.displayName);
 		} catch (err) {
 			console.error(err);
 		}
@@ -40,15 +38,14 @@ const Home = ({ navigation }) => {
 
 	return (
 		<SafeAreaView className='flex-1'>
-			<View className='pt-5 flex-row-reverse ml-5 items-center'>
+			<View className='pt-5 flex-row-reverse ml-3 items-center'>
 				<TouchableOpacity onPress={signOutUser}>
 					<Image
 						source={require('../assets/pickup.png')}
-						style={{ width: 70, height: 70 }}
+						style={{ width: 50, height: 50 }}
 					/>
 				</TouchableOpacity>
-
-				<Text h3>Hi {username}</Text>
+				{userName === '' ? <Text h3>Hi</Text> : <Text h3>Hi, {userName}</Text>}
 			</View>
 		</SafeAreaView>
 	);
