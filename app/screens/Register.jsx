@@ -1,7 +1,10 @@
-import { View, KeyboardAvoidingView } from 'react-native';
+import { View, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
 import { Input, Text, Button } from 'react-native-elements';
 import { Link } from '@react-navigation/native';
 import React, { useState, useLayoutEffect } from 'react';
+import { auth } from './../firebase';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { apiBaseUrl } from './../constants';
 
 const Register = ({ navigation }) => {
 	const [email, setEmail] = useState('');
@@ -10,7 +13,46 @@ const Register = ({ navigation }) => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 
-	const registerUser = async () => {};
+	const registerUser = async () => {
+		let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+		if (password === confirmPassword && reg.test(email) != false) {
+			try {
+				const data = {
+					email,
+					password,
+					firstName,
+					lastName,
+				};
+
+				const response = await fetch(`${apiBaseUrl}/user/register`, {
+					method: 'POST',
+					headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(data),
+				});
+
+				if (response.status === 201) {
+					const authUser = await createUserWithEmailAndPassword(
+						auth,
+						email,
+						password
+					);
+					const user = authUser.user;
+				} else {
+					alert(
+						'We were unable to register you. You might\
+						already have an account. Login instead or try again later'
+					);
+				}
+			} catch (err) {
+				console.error(err.message);
+			}
+		} else {
+			alert('Your email is invalid or your passwords do not match');
+		}
+	};
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
@@ -68,6 +110,14 @@ const Register = ({ navigation }) => {
 					title='Register'
 					style={{ width: 250 }}
 				/>
+				<View className='pt-4 items-center flex-row space-x-1'>
+					<Text>Already have an account? </Text>
+					<TouchableOpacity>
+						<Link to={{ screen: 'Login' }}>
+							<Text className='underline text-sky-400'>Login</Text>
+						</Link>
+					</TouchableOpacity>
+				</View>
 			</View>
 
 			<View style={{ width: 100 }}></View>
