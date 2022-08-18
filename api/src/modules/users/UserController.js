@@ -94,6 +94,7 @@ const registerUser = async (req, res) => {
 			firstName,
 			lastName,
 			email: email.toLowerCase(),
+			firebaseId: req.params.fireId,
 			password: encryptedPassword,
 		});
 

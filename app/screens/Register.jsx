@@ -27,36 +27,22 @@ const Register = ({ navigation }) => {
 					lastName,
 				};
 				setIsLoading(true);
-				const response = await fetch(`${apiBaseUrl}/user/register`, {
-					method: 'POST',
-					headers: {
-						Accept: 'application/json',
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(data),
-				});
 
-				if (response.status === 201) {
-					const userData = await response.json();
+				await createUserWithEmailAndPassword(auth, email, password);
 
-					const authUser = await createUserWithEmailAndPassword(
-						auth,
-						email,
-						password
-					);
-					currentUser = auth.currentUser;
-
-					await fetch(`${apiBaseUrl}/user/update/firebase/${userData.id}`, {
-						method: 'PUT',
+				const response = await fetch(
+					`${apiBaseUrl}/user/register/${auth.currentUser.uid}`,
+					{
+						method: 'POST',
 						headers: {
 							Accept: 'application/json',
 							'Content-Type': 'application/json',
 						},
-						body: {
-							firebaseId: auth.currentUser.uid,
-						},
-					});
-				} else {
+						body: JSON.stringify(data),
+					}
+				);
+
+				if (response.status != 201) {
 					alert(
 						'We were unable to register you. You might\
 						already have an account. Login instead or try again later'
