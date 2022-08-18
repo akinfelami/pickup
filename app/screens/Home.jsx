@@ -13,6 +13,7 @@ const Home = ({ navigation }) => {
 			console.error(err);
 		}
 	};
+
 	return (
 		<SafeAreaView className='flex-1'>
 			<View className='pt-5 flex-row-reverse ml-5 items-center'>
