@@ -9,8 +9,14 @@ const app = express();
 const userRouter = require('./src/modules/users/UserRoutes');
 const eventRouter = require('./src/modules/events/EventRoutes');
 const commentRouter = require('./src/modules/comments/CommentRoutes');
-
 require('./src/utils/redis');
+const serviceAccount = require('./cornell-pickup-firebase-adminsdk-35pej-5305c57ea2.json');
+const admin = require('firebase-admin');
+
+admin.initializeApp({
+	credential: admin.credential.cert(serviceAccount),
+	databaseURL: 'https://cornell-pickup-default-rtdb.firebaseio.com',
+});
 
 app.use(cors());
 app.use(cookieParser());
