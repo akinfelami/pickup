@@ -12,6 +12,9 @@ const Register = ({ navigation }) => {
 	const [confirmPassword, setConfirmPassword] = useState('');
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
+	const [loading, setIsLoading] = useState(false);
+
+	let currentUser;
 
 	const registerUser = async () => {
 		let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
@@ -23,7 +26,7 @@ const Register = ({ navigation }) => {
 					firstName,
 					lastName,
 				};
-
+				setIsLoading(true);
 				const response = await fetch(`${apiBaseUrl}/user/register`, {
 					method: 'POST',
 					headers: {
@@ -34,18 +37,34 @@ const Register = ({ navigation }) => {
 				});
 
 				if (response.status === 201) {
+					const userData = response.json();
+					const userId = userData.id;
+					console.log(userId);
 					const authUser = await createUserWithEmailAndPassword(
 						auth,
 						email,
 						password
 					);
-					const user = authUser.user;
+					currentUser = auth.currentUser;
+
+					await fetch(`${apiBaseUrl}/user/update/firebase/${userId}`, {
+						method: 'PUT',
+						headers: {
+							Accept: 'application/json',
+							'Content-Type': 'application/json',
+						},
+						body: {
+							firebaseId: auth.currentUser.uid,
+						},
+					});
 				} else {
 					alert(
 						'We were unable to register you. You might\
 						already have an account. Login instead or try again later'
 					);
 				}
+
+				setIsLoading(false);
 			} catch (err) {
 				console.error(err.message);
 			}
@@ -104,12 +123,17 @@ const Register = ({ navigation }) => {
 						onSubmitEditing={registerUser}
 					/>
 				</View>
-				<Button
-					raised
-					onPress={registerUser}
-					title='Register'
-					style={{ width: 250 }}
-				/>
+				{loading === true ? (
+					<Button loading title='Register' style={{ width: 250 }} />
+				) : (
+					<Button
+						raised
+						onPress={registerUser}
+						title='Register'
+						style={{ width: 250 }}
+					/>
+				)}
+
 				<View className='pt-4 items-center flex-row space-x-1'>
 					<Text>Already have an account? </Text>
 					<TouchableOpacity>

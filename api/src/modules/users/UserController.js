@@ -42,6 +42,21 @@ const updateAboutUser = async (req, res) => {
 	}
 };
 
+const updateFirebaseId = async (req, res) => {
+	try {
+		const { firebaseId } = req.body;
+		await User.findByIdAndUpdate(
+			req.params.userId,
+			{ firebaseId: firebaseId },
+			{ new: true, upsert: true }
+		);
+
+		res.status(201).json({ status: 'Success' });
+	} catch (err) {
+		res.status(400).json({ status: 'failed', message: err.message });
+	}
+};
+
 const updateUserInterests = async (req, res) => {
 	try {
 		const { interests } = req.body;
@@ -154,6 +169,7 @@ const logoutUser = async (req, res) => {
 module.exports = {
 	updateUserInterests,
 	updateAboutUser,
+	updateFirebaseId,
 	getWelcome,
 	getUser,
 	registerUser,
