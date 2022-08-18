@@ -8,7 +8,7 @@ const getWelcome = async (req, res) => {
 
 const getUser = async (req, res) => {
 	try {
-		const user = await User.findById(req.params.userId)
+		const user = await User.findOne({ firebaseId: req.params.userId })
 			.cache({ expire: 10 })
 			.lean()
 			.exec();
@@ -18,6 +18,7 @@ const getUser = async (req, res) => {
 			lastName: user.lastName,
 			displayName: user.username,
 			groups: user.groups,
+			firebaseId: user.firebaseId,
 			events: user.events,
 			about: user.about,
 			interests: user.interests,
