@@ -7,6 +7,12 @@ const All = () => {
 	return (
 		<ScrollView>
 			<EventCard />
+			<EventCard />
+			<EventCard />
+			<EventCard />
+			<EventCard />
+			<EventCard />
+			<EventCard />
 		</ScrollView>
 	);
 };
