@@ -2,9 +2,9 @@ import { View, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
 import { Input, Text, Button } from 'react-native-elements';
 import { Link } from '@react-navigation/native';
 import React, { useState, useLayoutEffect } from 'react';
-import { auth } from './../firebase';
+import { auth } from '../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { apiBaseUrl } from './../constants';
+import { apiBaseUrl } from '../constants';
 
 const Register = ({ navigation }) => {
 	const [email, setEmail] = useState('');
