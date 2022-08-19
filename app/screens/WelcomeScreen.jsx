@@ -1,6 +1,6 @@
 import { SafeAreaView, View } from 'react-native';
 import { Image, Text, Button } from 'react-native-elements';
-import { auth } from './../firebase';
+import { auth } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
 import React, { useEffect } from 'react';
