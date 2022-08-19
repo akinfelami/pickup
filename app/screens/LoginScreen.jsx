@@ -63,7 +63,6 @@ const Login = ({ navigation }) => {
 							<Input
 								textContentType='username'
 								placeholder='Email'
-								autoFocus
 								type='email'
 								value={email}
 								onChangeText={(text) => setEmail(text)}

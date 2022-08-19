@@ -81,7 +81,7 @@ const Register = ({ navigation }) => {
 				behavior={Platform.OS === 'ios' ? 'padding' : null}>
 				<StatusBar style='dark' />
 				<View>
-					<Text className='mb-5' h3>
+					<Text className='mb-5 text-center' h3>
 						{' '}
 						Create a Pickup account
 					</Text>
