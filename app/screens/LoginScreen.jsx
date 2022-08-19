@@ -41,6 +41,7 @@ const Login = ({ navigation }) => {
 			.catch((error) => {
 				alert(error.code);
 			});
+		setIsLoading(false);
 	};
 
 	return (

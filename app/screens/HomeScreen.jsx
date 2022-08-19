@@ -1,11 +1,10 @@
-import { View, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, SafeAreaView, TouchableOpacity, StatusBar } from 'react-native';
 import { Image, Text, Button } from 'react-native-elements';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { apiBaseUrl } from '../constants';
 import Tabs from '../components/Tabs';
-import Header from '../components/Header';
 
 const Home = ({ navigation }) => {
 	const [userData, setUserData] = useState({});
@@ -40,6 +39,7 @@ const Home = ({ navigation }) => {
 
 	return (
 		<SafeAreaView className='flex-1'>
+			{/* <StatusBar backgroundColor='#0000' /> */}
 			<View className='pt-5 flex-row-reverse ml-3 items-center'>
 				<TouchableOpacity onPress={signOutUser}>
 					<Image
@@ -49,19 +49,22 @@ const Home = ({ navigation }) => {
 					/>
 				</TouchableOpacity>
 				{userName === '' ? (
-					<Text className='mr-3' h3>
+					<Text className='mr-3' h4>
 						Hi
 					</Text>
 				) : (
-					<Text className='mr-3' h3>
+					<Text className='mr-3' h4>
 						Hi, {userName}
 					</Text>
 				)}
 			</View>
-			<View className='ml-5 mt-5'>
-				<Text h4> Your Events</Text>
+			<View className='ml-5 mt-5 mb-8'>
+				<Text h3 className='font-bold'>
+					{' '}
+					Your Events
+				</Text>
 			</View>
-			<Tabs />
+			<Tabs data={userData} />
 		</SafeAreaView>
 	);
 };
