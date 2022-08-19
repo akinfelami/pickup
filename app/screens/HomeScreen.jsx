@@ -68,7 +68,7 @@ const Home = ({ navigation }) => {
 				</Text>
 			</View>
 			<Tabs data={userData} />
-			<CreateEvent />
+			<CreateEvent navigation={navigation} />
 		</SafeAreaView>
 	);
 };
