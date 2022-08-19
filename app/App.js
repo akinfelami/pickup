@@ -7,6 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import HomeScreen from './screens/HomeScreen';
+import CreateEventScreen from './screens/CreateEventScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Tabs from './components/Tabs';
@@ -35,6 +36,11 @@ export default function App() {
 						options={{ headerShown: false }}
 						name='Home'
 						component={HomeScreen}
+					/>
+					<Stack.Screen
+						options={{ headerShown: false, presentation: 'modal' }}
+						name='CreateEvent'
+						component={CreateEventScreen}
 					/>
 				</Stack.Navigator>
 			</TailwindProvider>

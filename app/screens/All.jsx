@@ -5,14 +5,14 @@ import React from 'react';
 
 const All = () => {
 	return (
-		<ScrollView>
+		<ScrollView className='pb-36'>
+			{/* <EventCard />
 			<EventCard />
 			<EventCard />
 			<EventCard />
 			<EventCard />
 			<EventCard />
-			<EventCard />
-			<EventCard />
+			<EventCard /> */}
 		</ScrollView>
 	);
 };

@@ -1,10 +1,12 @@
-import { View, SafeAreaView, TouchableOpacity, StatusBar } from 'react-native';
+import { View, SafeAreaView, TouchableOpacity } from 'react-native';
 import { Image, Text, Button } from 'react-native-elements';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 import React, { useEffect, useState } from 'react';
 import { apiBaseUrl } from '../constants';
 import Tabs from '../components/Tabs';
+import { StatusBar } from 'expo-status-bar';
+import CreateEvent from '../components/CreateEvent';
 
 const Home = ({ navigation }) => {
 	const [userData, setUserData] = useState({});
@@ -39,7 +41,8 @@ const Home = ({ navigation }) => {
 
 	return (
 		<SafeAreaView className='flex-1'>
-			{/* <StatusBar backgroundColor='#0000' /> */}
+			<StatusBar style='dark' />
+
 			<View className='pt-5 flex-row-reverse ml-3 items-center'>
 				<TouchableOpacity onPress={signOutUser}>
 					<Image
@@ -65,6 +68,7 @@ const Home = ({ navigation }) => {
 				</Text>
 			</View>
 			<Tabs data={userData} />
+			<CreateEvent />
 		</SafeAreaView>
 	);
 };
