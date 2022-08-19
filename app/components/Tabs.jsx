@@ -4,6 +4,7 @@ import All from '../screens/All';
 import Past from '../screens/Past';
 import Going from '../screens/Going';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import Saved from '../screens/Saved';
 
 const FirstRoute = () => <All />;
 
@@ -11,12 +12,15 @@ const SecondRoute = () => <Past />;
 
 const ThirdRoute = () => <Going />;
 
+const FourthRoute = () => <Saved />;
+
 const initialLayout = { width: Dimensions.get('window').width };
 
 const renderScene = SceneMap({
 	first: FirstRoute,
 	second: SecondRoute,
 	third: ThirdRoute,
+	fourth: FourthRoute,
 });
 
 const renderTabBar = (props) => (
@@ -41,6 +45,7 @@ const Tabs = () => {
 	const [index, setIndex] = React.useState(0);
 	const [routes] = React.useState([
 		{ key: 'first', title: 'ALL' },
+		{ key: 'fourth', title: 'SAVED' },
 		{ key: 'third', title: 'GOING' },
 		{ key: 'second', title: 'PAST' },
 	]);
