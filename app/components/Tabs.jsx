@@ -1,21 +1,69 @@
-import { View, Text } from 'react-native';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { View, Text, StyleSheet, Dimensions, StatusBar } from 'react-native';
 import React from 'react';
-import TabBar from './TabBar';
 import All from '../screens/All';
 import Past from '../screens/Past';
 import Going from '../screens/Going';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
-const Tab = createMaterialTopTabNavigator();
+const FirstRoute = () => <All />;
+
+const SecondRoute = () => <Past />;
+
+const ThirdRoute = () => <Going />;
+
+const initialLayout = { width: Dimensions.get('window').width };
+
+const renderScene = SceneMap({
+	first: FirstRoute,
+	second: SecondRoute,
+	third: ThirdRoute,
+});
+
+const renderTabBar = (props) => (
+	<TabBar
+		{...props}
+		indicatorStyle={{ backgroundColor: 'black' }}
+		renderLabel={({ route, color }) => (
+			<Text
+				style={{
+					color: 'grey',
+					fontWeight: '700',
+					fontSize: '16',
+				}}>
+				{route.title}
+			</Text>
+		)}
+		style={{ backgroundColor: null }}
+	/>
+);
 
 const Tabs = () => {
+	const [index, setIndex] = React.useState(0);
+	const [routes] = React.useState([
+		{ key: 'first', title: 'ALL' },
+		{ key: 'third', title: 'GOING' },
+		{ key: 'second', title: 'PAST' },
+	]);
+
 	return (
-		<Tab.Navigator tabBar={(props) => <TabBar {...props} />}>
-			<Tab.Screen name='All' component={All} />
-			<Tab.Screen name='Past' component={Past} />
-			<Tab.Screen name='Going' component={Going} />
-		</Tab.Navigator>
+		<TabView
+			renderTabBar={renderTabBar}
+			navigationState={{ index, routes }}
+			renderScene={renderScene}
+			onIndexChange={setIndex}
+			initialLayout={initialLayout}
+			style={styles.container}
+		/>
 	);
 };
+
+const styles = StyleSheet.create({
+	container: {
+		marginTop: StatusBar.currentHeight,
+	},
+	scene: {
+		flex: 1,
+	},
+});
 
 export default Tabs;

@@ -1,11 +1,13 @@
-import { View, Text } from 'react-native';
+import { View, ScrollView } from 'react-native';
+import { Image, Text, Button } from 'react-native-elements';
+import EventCard from '../components/EventCards';
 import React from 'react';
 
 const All = () => {
 	return (
-		<View>
-			<Text>Welcome</Text>
-		</View>
+		<ScrollView>
+			<EventCard />
+		</ScrollView>
 	);
 };
 

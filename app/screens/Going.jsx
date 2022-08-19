@@ -1,11 +1,11 @@
-import { View, Text } from 'react-native';
+import { View, ScrollView, Text } from 'react-native';
 import React from 'react';
 
 const Going = () => {
 	return (
-		<View>
+		<ScrollView>
 			<Text>Going</Text>
-		</View>
+		</ScrollView>
 	);
 };
 
