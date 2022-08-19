@@ -5,16 +5,15 @@ import { Ionicons } from '@expo/vector-icons';
 
 const CreateEvent = ({ navigation }) => {
 	return (
-		<View className='absolute bottom-10 w-full 2-50'>
-			<View className='mx-5 p-4 rounded-lg items-end space-x-1'>
-				<Ionicons.Button
-					name='create-outline'
-					backgroundColor={null}
-					onPress={console.log('pressed')}
-					size={54}
-					color='black'
-				/>
-			</View>
+		<View className='absolute bottom-10 w-50 z-50 items-end'>
+			<TouchableOpacity
+				onPress={() => navigation.navigate('CreateEvent')}
+				className='p-4 rounded-lg items-center space-x-1 mx-9 flex-row-reverse bg-slate-500'>
+				<Text className='text-white flex-1 font-extrabold text-lg text-center'>
+					Create Event
+				</Text>
+				<Ionicons color='red' name='create-outline' size={24} />
+			</TouchableOpacity>
 		</View>
 	);
 };
