@@ -1,10 +1,20 @@
-import { View, KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+import {
+	View,
+	KeyboardAvoidingView,
+	TouchableOpacity,
+	ScrollView,
+	StyleSheet,
+	TouchableWithoutFeedback,
+	Keyboard,
+	TextInput,
+} from 'react-native';
 import { Input, Text, Button } from 'react-native-elements';
 import { Link } from '@react-navigation/native';
 import React, { useState, useLayoutEffect } from 'react';
 import { auth } from '../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { apiBaseUrl } from '../constants';
+import { StatusBar } from 'expo-status-bar';
 
 const Register = ({ navigation }) => {
 	const [email, setEmail] = useState('');
@@ -65,73 +75,81 @@ const Register = ({ navigation }) => {
 	}, [navigation]);
 
 	return (
-		<KeyboardAvoidingView
-			behavior={Platform.OS === 'ios' ? 'padding' : null}
-			className='flex-1'>
-			<View className='justify-items-center items-center flex-1 pt-20'>
-				<Text h3> Create a Pickup account</Text>
-				<View className='pt-10' style={{ width: 350 }}>
-					<Input
-						required
-						placeholder='First Name'
-						autoFocus
-						type='text'
-						value={firstName}
-						onChangeText={(text) => setFirstName(text)}
-					/>
+		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<KeyboardAvoidingView
+				style={styles.container}
+				behavior={Platform.OS === 'ios' ? 'padding' : null}>
+				<StatusBar style='dark' />
+				<View>
+					<Text className='mb-5' h3>
+						{' '}
+						Create a Pickup account
+					</Text>
+					<View style={{ width: 300 }}>
+						<Input
+							placeholder='First Name'
+							type='text'
+							value={firstName}
+							onChangeText={(text) => setFirstName(text)}
+						/>
 
-					<Input
-						placeholder='Last Name'
-						type='text'
-						value={lastName}
-						onChangeText={(text) => setLastName(text)}
-					/>
-					<Input
-						placeholder='Email'
-						type='email'
-						value={email}
-						onChangeText={(text) => setEmail(text)}
-					/>
-					<Input
-						placeholder='Password'
-						secureTextEntry
-						type='password'
-						value={password}
-						onChangeText={(text) => setPassword(text)}
-					/>
-					<Input
-						placeholder='Confirm Password'
-						secureTextEntry
-						type='password'
-						value={confirmPassword}
-						onChangeText={(text) => setConfirmPassword(text)}
-						onSubmitEditing={registerUser}
-					/>
+						<Input
+							placeholder='Last Name'
+							type='text'
+							value={lastName}
+							onChangeText={(text) => setLastName(text)}
+						/>
+						<Input
+							placeholder='Email'
+							type='email'
+							value={email}
+							onChangeText={(text) => setEmail(text)}
+						/>
+						<Input
+							placeholder='Password'
+							secureTextEntry
+							type='password'
+							value={password}
+							onChangeText={(text) => setPassword(text)}
+						/>
+						<Input
+							placeholder='Confirm Password'
+							secureTextEntry
+							type='password'
+							value={confirmPassword}
+							onChangeText={(text) => setConfirmPassword(text)}
+							onSubmitEditing={registerUser}
+						/>
+					</View>
+					{loading === true ? (
+						<Button loading title='Register' />
+					) : (
+						<Button raised onPress={registerUser} title='Register' />
+					)}
+
+					<View className='pt-4 items-center flex-row space-x-1'>
+						<Text>Already have an account? </Text>
+						<TouchableOpacity>
+							<Link to={{ screen: 'Login' }}>
+								<Text className='underline text-sky-400'>Login</Text>
+							</Link>
+						</TouchableOpacity>
+					</View>
 				</View>
-				{loading === true ? (
-					<Button loading title='Register' style={{ width: 250 }} />
-				) : (
-					<Button
-						raised
-						onPress={registerUser}
-						title='Register'
-						style={{ width: 250 }}
-					/>
-				)}
-
-				<View className='pt-4 items-center flex-row space-x-1'>
-					<Text>Already have an account? </Text>
-					<TouchableOpacity>
-						<Link to={{ screen: 'Login' }}>
-							<Text className='underline text-sky-400'>Login</Text>
-						</Link>
-					</TouchableOpacity>
-				</View>
-			</View>
-
-			<View style={{ width: 100 }}></View>
-		</KeyboardAvoidingView>
+				<View style={{ height: 100 }}></View>
+			</KeyboardAvoidingView>
+		</TouchableWithoutFeedback>
 	);
 };
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		alignItems: 'center',
+		justifyContent: 'center',
+		padding: 8,
+		backgroundColor: 'white',
+	},
+});
 
 export default Register;
