@@ -12,7 +12,7 @@ const CreateEvent = ({ navigation }) => {
 				<Text className='text-white flex-1 font-extrabold text-lg text-center'>
 					Create Event
 				</Text>
-				<Ionicons color='red' name='create-outline' size={24} />
+				<Ionicons color='blue' name='create-outline' size={24} />
 			</TouchableOpacity>
 		</View>
 	);

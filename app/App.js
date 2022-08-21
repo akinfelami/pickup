@@ -37,11 +37,7 @@ export default function App() {
 						name='Home'
 						component={HomeScreen}
 					/>
-					<Stack.Screen
-						options={{ headerShown: false, presentation: 'modal' }}
-						name='CreateEvent'
-						component={CreateEventScreen}
-					/>
+					<Stack.Screen name='CreateEvent' component={CreateEventScreen} />
 				</Stack.Navigator>
 			</TailwindProvider>
 		</NavigationContainer>
