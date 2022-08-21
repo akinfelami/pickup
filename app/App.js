@@ -4,12 +4,16 @@ import { StyleSheet, Text, View } from 'react-native';
 import { TailwindProvider } from 'tailwindcss-react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Login from './screens/Login';
-import Register from './screens/Register';
-import Home from './screens/Home';
-import Welcome from './screens/Welcome';
+import LoginScreen from './screens/LoginScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import HomeScreen from './screens/HomeScreen';
+import CreateEventScreen from './screens/CreateEventScreen';
+import WelcomeScreen from './screens/WelcomeScreen';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Tabs from './components/Tabs';
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 
 export default function App() {
 	return (
@@ -19,19 +23,24 @@ export default function App() {
 					<Stack.Screen
 						options={{ headerShown: false }}
 						name='Welcome'
-						component={Welcome}
+						component={WelcomeScreen}
 					/>
 					<Stack.Screen
 						options={{ headerShown: false }}
 						name='Login'
-						component={Login}
+						component={LoginScreen}
 					/>
 
-					<Stack.Screen name='Register' component={Register} />
+					<Stack.Screen name='Register' component={RegisterScreen} />
 					<Stack.Screen
 						options={{ headerShown: false }}
 						name='Home'
-						component={Home}
+						component={HomeScreen}
+					/>
+					<Stack.Screen
+						options={{ headerShown: false, presentation: 'modal' }}
+						name='CreateEvent'
+						component={CreateEventScreen}
 					/>
 				</Stack.Navigator>
 			</TailwindProvider>
