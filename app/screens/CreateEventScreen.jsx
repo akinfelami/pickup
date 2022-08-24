@@ -22,13 +22,11 @@ const CreateEventScreen = ({ navigation }) => {
 	const [loading, setLoading] = useState(false);
 	const [eventTitle, setEventTitle] = useState('');
 	const [eventDescription, setEventDescription] = useState('');
-
+	const [address, setAddress] = useState('');
+	const [spotsAvailable, setSpotsAvailable] = useState(0);
 	const [datePicker, setDatePicker] = useState(false);
-
 	const [date, setDate] = useState(new Date());
-
 	const [timePicker, setTimePicker] = useState(false);
-
 	const [time, setTime] = useState(new Date(Date.now()));
 	time.setSeconds(0, 0);
 
@@ -74,23 +72,34 @@ const CreateEventScreen = ({ navigation }) => {
 
 					<View className='p-2'>
 						<Input
-							placeholder='Event Name'
+							placeholder='Enter a name for your event'
 							type='text'
 							value={eventTitle}
 							onChangeText={(text) => setEventTitle(text)}
 						/>
 						<Input
-							placeholder='Event Description'
+							label='Event Description'
+							multiline={true}
+							style={{ height: 70, textAlignVertical: 'top' }}
+							placeholder='A brief description of your event. Minimum of 10 words'
 							type='text'
 							value={eventDescription}
 							onChangeText={(text) => setEventDescription(text)}
 						/>
 
 						<Input
-							placeholder='Address or Name of Location'
+							placeholder='Address or Location'
 							type='text'
-							value={eventDescription}
-							onChangeText={(text) => setEventDescription(text)}
+							value={address}
+							onChangeText={(text) => setAddress(text)}
+						/>
+
+						<Input
+							placeholder='Spots available'
+							type='text'
+							keyboardType='numeric'
+							value={spotsAvailable}
+							onChangeText={(text) => setSpotsAvailable(text)}
 						/>
 
 						<TouchableOpacity
@@ -155,11 +164,16 @@ const CreateEventScreen = ({ navigation }) => {
 								<Ionicons name='chevron-forward' size={32} color='black' />
 							</View>
 						</TouchableOpacity>
-						<View style={{ width: 150, marginTop: 10 }}>
+						<View style={{ width: 125, marginTop: 20, alignItems: 'center' }}>
 							{loading === true ? (
-								<Button loading title='Create Event' />
+								<Button className='rounded-sm' loading title='Create Event' />
 							) : (
-								<Button raised title='Create Event' />
+								<Button
+									style={{ borderRadius: 15 }}
+									title='Create Event'
+									raised
+									size={24}
+								/>
 							)}
 						</View>
 					</View>
