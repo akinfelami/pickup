@@ -19,6 +19,7 @@ const CreateEventScreen = ({ navigation }) => {
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerBackTitle: 'Events',
+			title: 'New Event',
 		});
 	}, [navigation]);
 	return (
@@ -28,23 +29,25 @@ const CreateEventScreen = ({ navigation }) => {
 				behavior={Platform.OS === 'ios' ? 'padding' : null}>
 				<StatusBar style='dark' />
 				<View>
-					<Text className='mb-5 text-center' h3>
-						{' '}
-						Create a new Event
-					</Text>
-					<View style={{ width: 300 }}>
-						<Input
-							placeholder='Event Title'
-							type='text'
-							value={eventTitle}
-							onChangeText={(text) => setEventTitle(text)}
-						/>
-						<Input
-							placeholder='Event Description'
-							type='text'
-							value={eventDescription}
-							onChangeText={(text) => setEventDescription(text)}
-						/>
+					<Input
+						placeholder='Event Name'
+						type='text'
+						value={eventTitle}
+						onChangeText={(text) => setEventTitle(text)}
+					/>
+					<Input
+						placeholder='Event Description'
+						type='text'
+						value={eventDescription}
+						onChangeText={(text) => setEventDescription(text)}
+					/>
+					<Input
+						placeholder='Select Date'
+						type='text'
+						value={eventDescription}
+						onChangeText={(text) => setEventDescription(text)}
+					/>
+					<View style={{ width: 150 }}>
 						{loading === true ? (
 							<Button loading title='Create Event' />
 						) : (
@@ -61,10 +64,9 @@ const CreateEventScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		alignItems: 'center',
-		justifyContent: 'center',
 		padding: 8,
-		backgroundColor: 'white',
+		// alignItems: 'center',
+		// // justifyContent: 'center',
 	},
 });
 
