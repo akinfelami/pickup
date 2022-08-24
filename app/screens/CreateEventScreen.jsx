@@ -13,6 +13,10 @@ import { Input, Text, Button } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import React, { useLayoutEffect, useState } from 'react';
+import { Fontisto } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
+import { Octicons } from '@expo/vector-icons';
 
 const CreateEventScreen = ({ navigation }) => {
 	const [loading, setLoading] = useState(false);
@@ -26,6 +30,7 @@ const CreateEventScreen = ({ navigation }) => {
 	const [timePicker, setTimePicker] = useState(false);
 
 	const [time, setTime] = useState(new Date(Date.now()));
+	time.setSeconds(0, 0);
 
 	const onChange = (event, selectedDate) => {
 		const currentDate = selectedDate;
@@ -35,20 +40,20 @@ const CreateEventScreen = ({ navigation }) => {
 
 	function showDatePicker() {
 		setDatePicker(!datePicker);
+		setTimePicker(false);
 	}
 
 	function showTimePicker() {
 		setTimePicker(!timePicker);
+		setDatePicker(false);
 	}
 
 	function onDateSelected(event, value) {
 		setDate(value);
-		// setDatePicker(false);
 	}
 
 	function onTimeSelected(event, value) {
 		setTime(value);
-		// setTimePicker(false);
 	}
 
 	useLayoutEffect(() => {
@@ -62,10 +67,12 @@ const CreateEventScreen = ({ navigation }) => {
 		<ScrollView>
 			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 				<KeyboardAvoidingView
+					className='w-full'
 					style={styles.container}
 					behavior={Platform.OS === 'ios' ? 'padding' : null}>
 					<StatusBar style='dark' />
-					<View>
+
+					<View className='p-2'>
 						<Input
 							placeholder='Event Name'
 							type='text'
@@ -78,12 +85,6 @@ const CreateEventScreen = ({ navigation }) => {
 							value={eventDescription}
 							onChangeText={(text) => setEventDescription(text)}
 						/>
-						<Input
-							placeholder='Select Date'
-							type='text'
-							value={eventDescription}
-							onChangeText={(text) => setEventDescription(text)}
-						/>
 
 						<Input
 							placeholder='Address or Name of Location'
@@ -91,13 +92,31 @@ const CreateEventScreen = ({ navigation }) => {
 							value={eventDescription}
 							onChangeText={(text) => setEventDescription(text)}
 						/>
-						<View>
-							<Text style={StyleSheet.text}>Date = {date.toDateString()}</Text>
 
-							<Text style={StyleSheet.text}>
-								Time = {time.toLocaleTimeString('en-US')}
+						<TouchableOpacity
+							className='flex-row justify-between m-3'
+							onPress={showDatePicker}>
+							<View className='flex-row space-x-2 items-center'>
+								<Fontisto name='date' size={24} color='black' />
+								<Text className='text-lg'>Select Date </Text>
+							</View>
+							<Text className='text-lg'>{date.toDateString()}</Text>
+						</TouchableOpacity>
+
+						<TouchableOpacity
+							className='flex-row justify-between m-3'
+							onPress={showTimePicker}>
+							<View className='flex-row space-x-2 items-center'>
+								<Ionicons name='ios-time-outline' size={24} color='black' />
+								<Text className='text-lg'>Select Time </Text>
+							</View>
+
+							<Text className='text-lg'>
+								{time.toLocaleTimeString('en-US')}
 							</Text>
+						</TouchableOpacity>
 
+						<View>
 							{datePicker && (
 								<DateTimePicker
 									textColor='black'
@@ -123,22 +142,25 @@ const CreateEventScreen = ({ navigation }) => {
 									style={StyleSheet.datePicker}
 								/>
 							)}
-
-							<View style={{ margin: 10 }}>
-								<Button
-									title='Show Date Picker'
-									color='green'
-									onPress={showDatePicker}
-								/>
+						</View>
+						<TouchableOpacity
+							className='flex-row justify-between m-3'
+							onPress={undefined}>
+							<View className='flex-row space-x-2 items-center'>
+								<FontAwesome name='photo' size={24} color='black' />
+								<Text className='text-lg'>Add Photo</Text>
 							</View>
-
-							<View style={{ margin: 10 }}>
-								<Button
-									title='Show Time Picker'
-									color='green'
-									onPress={showTimePicker}
-								/>
+							<View className='flex-row space-x-1 items-center'>
+								<Text className='text-lg'>Select Photo</Text>
+								<Ionicons name='chevron-forward' size={32} color='black' />
 							</View>
+						</TouchableOpacity>
+						<View style={{ width: 150, marginTop: 10 }}>
+							{loading === true ? (
+								<Button loading title='Create Event' />
+							) : (
+								<Button raised title='Create Event' />
+							)}
 						</View>
 					</View>
 					<View style={{ height: 100 }}></View>
@@ -153,7 +175,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 
 		padding: 8,
-		// backgroundColor: 'white',
 	},
 	text: {
 		fontSize: 25,
