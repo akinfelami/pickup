@@ -19,7 +19,7 @@ export default function App() {
 	return (
 		<NavigationContainer>
 			<TailwindProvider>
-				<Stack.Navigator>
+				<Stack.Navigator style={{ backgroundColor: 'white' }}>
 					<Stack.Screen
 						options={{ headerShown: false }}
 						name='Welcome'
