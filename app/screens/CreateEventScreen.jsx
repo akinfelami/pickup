@@ -15,6 +15,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useLayoutEffect, useState } from 'react';
 import { Fontisto } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
 
@@ -36,6 +37,11 @@ const CreateEventScreen = ({ navigation }) => {
 		setDate(currentDate);
 	};
 
+	const onEventNameChange = (text) => {
+		setEventTitle(text);
+		setShowSend(true);
+	};
+
 	function showDatePicker() {
 		setDatePicker(!datePicker);
 		setTimePicker(false);
@@ -54,15 +60,22 @@ const CreateEventScreen = ({ navigation }) => {
 		setTime(value);
 	}
 
+	const createNewEvent = () => {
+		console.log('New Event!');
+	};
+
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerBackTitle: 'Events',
 			title: 'New Event',
+			headerRight: () => (
+				<Feather onPress={createNewEvent} name='send' size={24} color='black' />
+			),
 		});
 	}, [navigation]);
 
 	return (
-		<ScrollView>
+		<ScrollView style={{ backgroundColor: 'white' }}>
 			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 				<KeyboardAvoidingView
 					className='w-full'
@@ -75,7 +88,7 @@ const CreateEventScreen = ({ navigation }) => {
 							placeholder='Enter a name for your event'
 							type='text'
 							value={eventTitle}
-							onChangeText={(text) => setEventTitle(text)}
+							onChangeText={(text) => onEventNameChange(text)}
 						/>
 						<Input
 							label='Event Description'
@@ -112,19 +125,6 @@ const CreateEventScreen = ({ navigation }) => {
 							<Text className='text-lg'>{date.toDateString()}</Text>
 						</TouchableOpacity>
 
-						<TouchableOpacity
-							className='flex-row justify-between m-3'
-							onPress={showTimePicker}>
-							<View className='flex-row space-x-2 items-center'>
-								<Ionicons name='ios-time-outline' size={24} color='black' />
-								<Text className='text-lg'>Select Time </Text>
-							</View>
-
-							<Text className='text-lg'>
-								{time.toLocaleTimeString('en-US')}
-							</Text>
-						</TouchableOpacity>
-
 						<View>
 							{datePicker && (
 								<DateTimePicker
@@ -152,6 +152,19 @@ const CreateEventScreen = ({ navigation }) => {
 								/>
 							)}
 						</View>
+
+						<TouchableOpacity
+							className='flex-row justify-between m-3'
+							onPress={showTimePicker}>
+							<View className='flex-row space-x-2 items-center'>
+								<Ionicons name='ios-time-outline' size={24} color='black' />
+								<Text className='text-lg'>Select Time </Text>
+							</View>
+
+							<Text className='text-lg'>
+								{time.toLocaleTimeString('en-US')}
+							</Text>
+						</TouchableOpacity>
 						<TouchableOpacity
 							className='flex-row justify-between m-3'
 							onPress={undefined}>
@@ -164,18 +177,6 @@ const CreateEventScreen = ({ navigation }) => {
 								<Ionicons name='chevron-forward' size={32} color='black' />
 							</View>
 						</TouchableOpacity>
-						<View style={{ width: 125, marginTop: 20, alignItems: 'center' }}>
-							{loading === true ? (
-								<Button className='rounded-sm' loading title='Create Event' />
-							) : (
-								<Button
-									style={{ borderRadius: 15 }}
-									title='Create Event'
-									raised
-									size={24}
-								/>
-							)}
-						</View>
 					</View>
 					<View style={{ height: 100 }}></View>
 				</KeyboardAvoidingView>
