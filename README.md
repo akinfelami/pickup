@@ -1,5 +1,7 @@
 # Cornell Games Pickup APP
 
-An app for scheduling pickup games in Cornell University
+An app for scheduling pickup games in Cornell University & Beyond
 
-Currently working on the api
+Coming soon...
+
+
