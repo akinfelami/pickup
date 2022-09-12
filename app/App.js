@@ -19,7 +19,7 @@ export default function App() {
 	return (
 		<NavigationContainer>
 			<TailwindProvider>
-				<Stack.Navigator>
+				<Stack.Navigator style={{ backgroundColor: 'white' }}>
 					<Stack.Screen
 						options={{ headerShown: false }}
 						name='Welcome'
@@ -37,11 +37,7 @@ export default function App() {
 						name='Home'
 						component={HomeScreen}
 					/>
-					<Stack.Screen
-						options={{ headerShown: false, presentation: 'modal' }}
-						name='CreateEvent'
-						component={CreateEventScreen}
-					/>
+					<Stack.Screen name='CreateEvent' component={CreateEventScreen} />
 				</Stack.Navigator>
 			</TailwindProvider>
 		</NavigationContainer>

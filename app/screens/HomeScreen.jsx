@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { apiBaseUrl } from '../constants';
 import Tabs from '../components/Tabs';
 import { StatusBar } from 'expo-status-bar';
-import CreateEvent from '../components/CreateEvent';
+import CreateEventButton from '../components/CreateEventButton';
 
 const Home = ({ navigation }) => {
 	const [userData, setUserData] = useState({});
@@ -68,7 +68,7 @@ const Home = ({ navigation }) => {
 				</Text>
 			</View>
 			<Tabs data={userData} />
-			<CreateEvent navigation={navigation} />
+			<CreateEventButton navigation={navigation} />
 		</SafeAreaView>
 	);
 };
