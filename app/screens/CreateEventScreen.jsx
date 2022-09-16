@@ -61,7 +61,11 @@ const CreateEventScreen = ({ navigation }) => {
 	}
 
 	const createNewEvent = () => {
-		console.log('New Event!');
+		if (date && time && address && eventTitle && eventDescription) {
+			console.log('New Event!');
+		} else {
+			alert('You need to complete all fields');
+		}
 	};
 
 	useLayoutEffect(() => {
@@ -165,7 +169,10 @@ const CreateEventScreen = ({ navigation }) => {
 								{time.toLocaleTimeString('en-US')}
 							</Text>
 						</TouchableOpacity>
-						<TouchableOpacity
+
+						{/* Holding off on addding photos for now. How do I moderate the photos added? */}
+
+						{/* <TouchableOpacity
 							className='flex-row justify-between m-3'
 							onPress={undefined}>
 							<View className='flex-row space-x-2 items-center'>
@@ -176,7 +183,7 @@ const CreateEventScreen = ({ navigation }) => {
 								<Text className='text-lg'>Select Photo</Text>
 								<Ionicons name='chevron-forward' size={32} color='black' />
 							</View>
-						</TouchableOpacity>
+						</TouchableOpacity> */}
 					</View>
 					<View style={{ height: 100 }}></View>
 				</KeyboardAvoidingView>
