@@ -62,6 +62,7 @@ const CreateEventScreen = ({ navigation }) => {
 
 	const createNewEvent = () => {
 		if (date && time && address && eventTitle && eventDescription) {
+			// Disable send button first
 			console.log('New Event!');
 		} else {
 			alert('You need to complete all fields');
