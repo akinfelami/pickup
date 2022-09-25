@@ -65,7 +65,7 @@ const CreateEventScreen = ({ navigation }) => {
 			// Disable send button first
 			console.log('New Event!');
 		} else {
-			alert('You need to complete all fields');
+			alert('You need to complete all fields to create an event');
 		}
 	};
 
