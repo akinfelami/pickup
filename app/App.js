@@ -1,4 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
+import 'expo-dev-menu';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TailwindProvider } from 'tailwindcss-react-native';

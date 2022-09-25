@@ -6,7 +6,8 @@ import React, { useEffect, useState } from 'react';
 import { apiBaseUrl } from '../constants';
 import Tabs from '../components/Tabs';
 import { StatusBar } from 'expo-status-bar';
-import CreateEventButton from '../components/CreateEventButton';
+import { Ionicons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
 const Home = ({ navigation }) => {
 	const [userData, setUserData] = useState({});
@@ -61,14 +62,27 @@ const Home = ({ navigation }) => {
 					</Text>
 				)}
 			</View>
-			<View className='ml-5 mt-5 mb-8'>
+			<View className='ml-5 mb-8'>
 				<Text h3 className='font-bold'>
 					{' '}
 					Your Events
 				</Text>
 			</View>
 			<Tabs data={userData} />
-			<CreateEventButton navigation={navigation} />
+			<View className='absolute bottom-10 w-full z-50 items-end -mx-6'>
+				<TouchableOpacity>
+					<AntDesign
+						onPress={() =>
+							navigation.navigate('CreateEvent', {
+								otherParam: userData.id,
+							})
+						}
+						name='pluscircle'
+						size={48}
+						color='blue'
+					/>
+				</TouchableOpacity>
+			</View>
 		</SafeAreaView>
 	);
 };
