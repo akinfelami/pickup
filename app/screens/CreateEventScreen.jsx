@@ -13,6 +13,7 @@ import { Input, Text, Button } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { apiBaseUrl } from '../constants';
 import React, { useLayoutEffect, useState } from 'react';
+import { auth } from '../firebase';
 import { Fontisto } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
@@ -71,23 +72,24 @@ const CreateEventScreen = ({ route, navigation }) => {
 	const createNewEvent = async () => {
 		console.log(typeof date);
 		try {
+			const token = await auth.currentUser.getIdToken();
+
 			const data = {
 				title,
 				description,
 				tags,
-				location,
+				spots,
 				time,
 				date,
-				spots,
+				location,
 			};
-
-			console.log(data);
 
 			const response = await fetch(`${apiBaseUrl}/event/${otherParam}/new`, {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
 					'Content-Type': 'application/json',
+					authorization: `Bearer ${token}`,
 				},
 				body: JSON.stringify(data),
 			});
