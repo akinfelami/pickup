@@ -84,6 +84,8 @@ const CreateEventScreen = ({ route, navigation }) => {
 				location,
 			};
 
+			console.log(route.params);
+
 			const response = await fetch(`${apiBaseUrl}/event/${otherParam}/new`, {
 				method: 'POST',
 				headers: {

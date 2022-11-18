@@ -3,7 +3,7 @@ import { Image, Text, Button } from 'react-native-elements';
 import { auth } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const Welcome = ({ navigation }) => {
 	useEffect(() => {
