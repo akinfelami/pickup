@@ -43,10 +43,6 @@ const createEvent = async (req, res) => {
 	try {
 		const { title, description, tags, location, time, date, spots } = req.body;
 
-		if (!(title && description && location)) {
-			return res.status(400).send('All input required');
-		}
-
 		const user = await User.findById(req.params.userId).lean().exec();
 
 		const event = new Event({
