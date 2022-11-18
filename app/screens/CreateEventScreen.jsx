@@ -11,24 +11,28 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { Input, Text, Button } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
+import { apiBaseUrl } from '../constants';
 import React, { useLayoutEffect, useState } from 'react';
+import { auth } from '../firebase';
 import { Fontisto } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
 
-const CreateEventScreen = ({ navigation }) => {
-	const [loading, setLoading] = useState(false);
-	const [eventTitle, setEventTitle] = useState('');
-	const [eventDescription, setEventDescription] = useState('');
-	const [address, setAddress] = useState('');
-	const [spotsAvailable, setSpotsAvailable] = useState(0);
+const CreateEventScreen = ({ route, navigation }) => {
+	const { otherParam } = route.params;
+	// const [loading, setIsLoading] = useState(false);
+	const [title, setEventTitle] = useState('');
+	const [tags, setTag] = useState([]);
+	const [description, setEventDescription] = useState('');
+	const [location, setAddress] = useState('');
+	const [spots, setSpotsAvailable] = useState(0);
 	const [datePicker, setDatePicker] = useState(false);
 	const [date, setDate] = useState(new Date());
 	const [timePicker, setTimePicker] = useState(false);
 	const [time, setTime] = useState(new Date(Date.now()));
+	const [featherSelected, setFeatherSelected] = useState(false);
 	time.setSeconds(0, 0);
 
 	const onChange = (event, selectedDate) => {
@@ -39,7 +43,6 @@ const CreateEventScreen = ({ navigation }) => {
 
 	const onEventNameChange = (text) => {
 		setEventTitle(text);
-		setShowSend(true);
 	};
 
 	function showDatePicker() {
@@ -60,11 +63,46 @@ const CreateEventScreen = ({ navigation }) => {
 		setTime(value);
 	}
 
-	const createNewEvent = () => {
-		if (date && time && address && eventTitle && eventDescription) {
-			console.log('New Event!');
-		} else {
-			alert('You need to complete all fields');
+	function onTagSelected(event, value) {
+		let arr = [];
+		arr.push(value);
+		setTag(arr);
+	}
+
+	const createNewEvent = async () => {
+		console.log(typeof date);
+		try {
+			const token = await auth.currentUser.getIdToken();
+
+			const data = {
+				title,
+				description,
+				tags,
+				spots,
+				time,
+				date,
+				location,
+			};
+
+			const response = await fetch(`${apiBaseUrl}/event/${otherParam}/new`, {
+				method: 'POST',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json',
+					authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify(data),
+			});
+
+			console.log(response);
+
+			// if (response.status != 201) {
+			// 	alert(
+			// 		'Oops! We were unable to create that event. Try again, please!'
+			// 	);
+			// }
+		} catch (err) {
+			console.error(err.message);
 		}
 	};
 
@@ -86,36 +124,46 @@ const CreateEventScreen = ({ navigation }) => {
 					style={styles.container}
 					behavior={Platform.OS === 'ios' ? 'padding' : null}>
 					<StatusBar style='dark' />
+					<Text h6 className='text-red-500 p-2'>
+						Note: All fields required
+					</Text>
 
 					<View className='p-2'>
 						<Input
 							placeholder='Enter a name for your event'
 							type='text'
-							value={eventTitle}
+							value={title}
 							onChangeText={(text) => onEventNameChange(text)}
 						/>
 						<Input
 							label='Event Description'
 							multiline={true}
 							style={{ height: 70, textAlignVertical: 'top' }}
-							placeholder='A brief description of your event. Minimum of 10 words'
+							placeholder='A brief description of your event. Minimum of 10 characters'
 							type='text'
-							value={eventDescription}
+							value={description}
 							onChangeText={(text) => setEventDescription(text)}
 						/>
 
 						<Input
 							placeholder='Address or Location'
 							type='text'
-							value={address}
+							value={location}
 							onChangeText={(text) => setAddress(text)}
+						/>
+
+						<Input
+							placeholder='Tag e.g. Soccer'
+							type='text'
+							value={tags}
+							onChangeText={(text) => onTagSelected(text)}
 						/>
 
 						<Input
 							placeholder='Spots available'
 							type='text'
 							keyboardType='numeric'
-							value={spotsAvailable}
+							value={spots}
 							onChangeText={(text) => setSpotsAvailable(text)}
 						/>
 
@@ -142,19 +190,6 @@ const CreateEventScreen = ({ navigation }) => {
 									style={StyleSheet.datePicker}
 								/>
 							)}
-
-							{timePicker && (
-								<DateTimePicker
-									textColor='black'
-									themeVariant='dark'
-									value={time}
-									mode={'time'}
-									display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-									is24Hour={false}
-									onChange={onTimeSelected}
-									style={StyleSheet.datePicker}
-								/>
-							)}
 						</View>
 
 						<TouchableOpacity
@@ -169,6 +204,21 @@ const CreateEventScreen = ({ navigation }) => {
 								{time.toLocaleTimeString('en-US')}
 							</Text>
 						</TouchableOpacity>
+
+						<View>
+							{timePicker && (
+								<DateTimePicker
+									textColor='black'
+									themeVariant='dark'
+									value={time}
+									mode={'time'}
+									display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+									is24Hour={false}
+									onChange={onTimeSelected}
+									style={StyleSheet.datePicker}
+								/>
+							)}
+						</View>
 
 						{/* Holding off on addding photos for now. How do I moderate the photos added? */}
 
