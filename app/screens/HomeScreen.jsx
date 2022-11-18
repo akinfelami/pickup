@@ -2,16 +2,17 @@ import { View, SafeAreaView, TouchableOpacity } from 'react-native';
 import { Image, Text, Button } from 'react-native-elements';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Component } from 'react';
 import { apiBaseUrl } from '../constants';
 import Tabs from '../components/Tabs';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 
-const Home = ({ navigation }) => {
+const Home = ({ route, navigation }) => {
 	const [userData, setUserData] = useState({});
 	const [userName, setUserName] = useState('');
+
 	const signOutUser = async () => {
 		try {
 			await signOut(auth);
@@ -28,13 +29,14 @@ const Home = ({ navigation }) => {
 	const fetchUser = async () => {
 		try {
 			const token = await auth.currentUser.getIdToken();
-			const response = await fetch(
-				`${apiBaseUrl}/user/get/${auth.currentUser.uid}`,
-				{ headers: { authorization: `Bearer ${token}` } }
-			);
-			const data = await response.json();
-			setUserData(data);
-			setUserName(data.displayName);
+			const uid = auth.currentUser.uid;
+			const response = await fetch(`${apiBaseUrl}/user/get/${uid}`, {
+				headers: { authorization: `Bearer ${token}` },
+			});
+			// const data = await response.json();
+			console.log(response);
+			// setUserData(data);
+			// setUserName(data.displayName);
 		} catch (err) {
 			console.error(err);
 		}
@@ -72,11 +74,11 @@ const Home = ({ navigation }) => {
 			<View className='absolute bottom-10 w-full z-50 items-end -mx-6'>
 				<TouchableOpacity>
 					<AntDesign
-						onPress={() =>
+						onPress={() => {
 							navigation.navigate('CreateEvent', {
 								otherParam: userData.id,
-							})
-						}
+							});
+						}}
 						name='pluscircle'
 						size={48}
 						color='blue'
