@@ -70,7 +70,6 @@ const CreateEventScreen = ({ route, navigation }) => {
 	}
 
 	const createNewEvent = async () => {
-		console.log(typeof date);
 		try {
 			const token = await auth.currentUser.getIdToken();
 
@@ -84,7 +83,7 @@ const CreateEventScreen = ({ route, navigation }) => {
 				location,
 			};
 
-			console.log(route.params);
+			console.log(data);
 
 			const response = await fetch(`${apiBaseUrl}/event/${otherParam}/new`, {
 				method: 'POST',
