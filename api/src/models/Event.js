@@ -44,11 +44,11 @@ const eventSchema = new mongoose.Schema(
 			enum: ['upcoming', 'past'],
 			default: 'upcoming',
 		},
-		type: {
-			type: String,
-			enum: ['recurring, non-recurring'],
-			default: 'non-recurring',
-		},
+		// type: {
+		// 	type: String,
+		// 	enum: ['recurring, non-recurring'],
+		// 	default: 'non-recurring',
+		// },
 	},
 	{
 		versionKey: false,
