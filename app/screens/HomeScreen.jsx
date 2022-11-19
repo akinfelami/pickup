@@ -33,10 +33,9 @@ const Home = ({ route, navigation }) => {
 			const response = await fetch(`${apiBaseUrl}/user/get/${uid}`, {
 				headers: { authorization: `Bearer ${token}` },
 			});
-			// const data = await response.json();
-			console.log(response);
-			// setUserData(data);
-			// setUserName(data.displayName);
+			const data = await response.json();
+			setUserData(data);
+			setUserName(data.displayName);
 		} catch (err) {
 			console.error(err);
 		}
