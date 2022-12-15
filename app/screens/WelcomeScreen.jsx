@@ -4,6 +4,7 @@ import { auth } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 
 import React, { useEffect, useState } from 'react';
+import { index } from './Index.jsx';
 
 const Welcome = ({ navigation }) => {
 	useEffect(() => {
