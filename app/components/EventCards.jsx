@@ -25,29 +25,26 @@ const EventCards = (navigation) => {
 			const res = await response.json();
 			setData(res);
 			EachCard(res);
-			
 		} catch (err) {
 			console.error(err);
 		}
 	};
 
 	const EachCard = (res) => {
-		console.log(res)
+		console.log(res);
 		// res.map((dat) => {
 		// 	return (
 		// 		<View>
 		// 			<Text>Hi</Text>
 		// 		</View>
 		// 	);
-		};
 	};
-
 	return (
 		<>
 			<View className='ml-3 mt-5 px-3'>
 				<TouchableOpacity>
 					<EachCard />
-					{/* <View>
+					<View>
 						<Text
 							style={{ fontSize: '20px' }}
 							className='font-bold text-lg text-gray-700'>
@@ -68,7 +65,7 @@ const EventCards = (navigation) => {
 							<Feather name='bookmark' size={20} color='grey' />
 							<Feather name='share' size={20} color='grey' />
 						</View>
-					</View> */}
+					</View>
 				</TouchableOpacity>
 				<View
 					style={{
