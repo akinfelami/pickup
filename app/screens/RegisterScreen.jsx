@@ -79,7 +79,7 @@ const Register = ({ navigation }) => {
 			<KeyboardAvoidingView
 				style={styles.container}
 				behavior={Platform.OS === 'ios' ? 'padding' : null}>
-				<StatusBar style='dark' />
+				<StatusBar style='light' />
 				<View>
 					<Text className='mb-5 text-center' h3>
 						{' '}
@@ -122,9 +122,17 @@ const Register = ({ navigation }) => {
 						/>
 					</View>
 					{loading === true ? (
-						<Button loading title='Register' />
+						<Button type='outline' loading title='Register' />
 					) : (
-						<Button raised onPress={registerUser} title='Register' />
+						<Button
+							buttonStyle={{
+								backgroundColor: '#102e48',
+								borderRadius: 5,
+							}}
+							raised
+							onPress={registerUser}
+							title='Register'
+						/>
 					)}
 
 					<View className='pt-4 items-center flex-row space-x-1'>
