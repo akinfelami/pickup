@@ -1,18 +1,13 @@
 import {
 	View,
 	KeyboardAvoidingView,
-	TouchableOpacity,
 	TouchableWithoutFeedback,
 	Keyboard,
-	SafeAreaView,
-	ActivityIndicator,
 	StyleSheet,
-	TextInput,
+	Alert,
 } from 'react-native';
 import { Image, Text, Input, Button } from 'react-native-elements';
 import React, { useState, useEffect } from 'react';
-import { Link } from '@react-navigation/native';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { auth } from '../firebase';
 import { onAuthStateChanged, signInWithEmailAndPassword } from 'firebase/auth';
 import { StatusBar } from 'expo-status-bar';
@@ -32,8 +27,6 @@ const Login = ({ navigation }) => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 
-	const height = useHeaderHeight();
-
 	const loginUser = () => {
 		setIsLoading(true);
 		signInWithEmailAndPassword(auth, email, password)
@@ -42,61 +35,79 @@ const Login = ({ navigation }) => {
 				setIsLoading(false);
 			})
 			.catch((error) => {
-				alert(error.code);
+				let errorMessage = error.code;
+				if (errorMessage === 'auth/invalid-email') {
+					Alert.alert('Login error', 'Invalid email!');
+				} else if (errorMessage === 'auth/user-disabled') {
+					Alert.alert('Login error', 'Your account has been disabled!');
+				} else if (errorMessage === 'auth/user-not-found') {
+					Alert.alert('Login error', 'No user found!');
+				} else if (errorMessage === 'auth/wrong-password') {
+					Alert.alert('Login error', 'Incorrect password!');
+				}
 			});
 		setIsLoading(false);
 	};
 
 	return (
-		<>
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-				<KeyboardAvoidingView
-					style={styles.container}
-					behavior={Platform.OS === 'ios' ? 'padding' : ''}>
-					<StatusBar style='dark' />
-					<View>
-						<Text className='mb-5 text-center' h3>
-							{' '}
-							Login To Pickup
-						</Text>
-						<View style={{ width: 300 }}>
-							<Input
-								textContentType='username'
-								placeholder='Email'
-								type='email'
-								value={email}
-								onChangeText={(text) => setEmail(text)}
-							/>
-
-							<Input
-								placeholder='Password'
-								textContentType='password'
-								secureTextEntry
-								type='password'
-								value={password}
-								onChangeText={(text) => setPassword(text)}
-								onSubmitEditing={loginUser}
-							/>
-						</View>
-						{loading === true ? (
-							<Button loading title='Login' />
-						) : (
-							<Button raised onPress={loginUser} title='Login' />
-						)}
-
-						<View className='pt-4 items-center flex-row space-x-1'>
-							<Text>Don't have an account? </Text>
-							<TouchableOpacity>
-								<Link to={{ screen: 'Register' }}>
-									<Text className='underline text-sky-400'>Register here</Text>
-								</Link>
-							</TouchableOpacity>
-						</View>
-						<Text className='pt-2 underline text-sky-400'>Forgot Password</Text>
-					</View>
-				</KeyboardAvoidingView>
-			</TouchableWithoutFeedback>
-		</>
+		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<KeyboardAvoidingView
+				behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+				style={styles.container}>
+				<StatusBar style='light' />
+				<Image
+					source={require('./../assets/pickup.png')}
+					style={{ width: 200, height: 200 }}
+				/>
+				<View style={styles.inputContainer}>
+					<Input
+						placeholder='Email'
+						autoCapitalize='none'
+						type='email'
+						value={email}
+						onChangeText={(text) => setEmail(text)}
+					/>
+					<Input
+						placeholder='Password'
+						secureTextEntry
+						type='password'
+						value={password}
+						onChangeText={(text) => setPassword(text)}
+						onSubmitEditing={loginUser}
+					/>
+				</View>
+				{loading === true ? (
+					<Button
+						buttonStyle={{
+							backgroundColor: '#2C6BED',
+							borderRadius: 5,
+						}}
+						containerStyle={styles.button}
+						loading
+						type='outline'
+						title='Login'
+					/>
+				) : (
+					<Button
+						buttonStyle={{
+							backgroundColor: '#102e48',
+							borderRadius: 5,
+						}}
+						containerStyle={styles.button}
+						raised
+						onPress={loginUser}
+						title='Login'
+					/>
+				)}
+				<Button
+					containerStyle={styles.button}
+					title='Register'
+					type='outline'
+					onPress={() => navigation.navigate('Register')}
+				/>
+				<View style={{ height: 100 }}></View>
+			</KeyboardAvoidingView>
+		</TouchableWithoutFeedback>
 	);
 };
 
@@ -105,8 +116,15 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		padding: 8,
+		padding: 10,
 		backgroundColor: 'white',
+	},
+	inputContainer: {
+		width: 300,
+	},
+	button: {
+		width: 200,
+		marginTop: 10,
 	},
 });
 
