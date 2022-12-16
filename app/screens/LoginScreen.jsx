@@ -62,6 +62,7 @@ const Login = ({ navigation }) => {
 				<View style={styles.inputContainer}>
 					<Input
 						placeholder='Email'
+						autoCapitalize='none'
 						type='email'
 						value={email}
 						onChangeText={(text) => setEmail(text)}
