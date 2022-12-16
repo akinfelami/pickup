@@ -79,12 +79,11 @@ const Login = ({ navigation }) => {
 				{loading === true ? (
 					<Button
 						buttonStyle={{
-							backgroundColor: '#2C6BED',
+							backgroundColor: '#102e48',
 							borderRadius: 5,
 						}}
 						containerStyle={styles.button}
 						loading
-						type='outline'
 						title='Login'
 					/>
 				) : (
