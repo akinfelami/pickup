@@ -78,10 +78,6 @@ const registerUser = async (req, res) => {
 	try {
 		const { firstName, lastName, email, password } = req.body;
 
-		if (!(email && password && firstName && lastName)) {
-			return res.status(400).send('All input required');
-		}
-
 		const oldUser = await User.findOne({ email });
 
 		if (oldUser) {
@@ -94,8 +90,8 @@ const registerUser = async (req, res) => {
 			username: firstName,
 			firstName,
 			lastName,
+			firebaseId: req.params.firebaseId,
 			email: email.toLowerCase(),
-			firebaseId: req.params.fireId,
 			password: encryptedPassword,
 		});
 
