@@ -129,9 +129,9 @@ const CreateEventScreen = ({ route, navigation }) => {
 					className='w-full'
 					style={styles.container}
 					behavior={Platform.OS === 'ios' ? 'padding' : null}>
-					<StatusBar style='dark' />
+					<StatusBar style='light' />
 					<Text h6 className='text-red-500 p-2'>
-						Note: All fields required
+						All fields required
 					</Text>
 
 					<View>

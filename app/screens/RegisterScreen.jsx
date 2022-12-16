@@ -55,7 +55,8 @@ const Register = ({ navigation }) => {
 	const firebaseRegister = async () => {
 		try {
 			await createUserWithEmailAndPassword(auth, email, password);
-			await updateFirebaseId();
+			//  Storing firebaseId is not necesarily important for our app at this moment
+			// await updateFirebaseId();
 		} catch (err) {
 			let errorMessage = err.code;
 			if (errorMessage === 'auth/email-already-in-use') {
@@ -90,7 +91,6 @@ const Register = ({ navigation }) => {
 	};
 
 	const registerUser = async () => {
-		// Too many API requests
 		setIsLoading(true);
 		if (password === confirmPassword) {
 			if (

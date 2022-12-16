@@ -9,9 +9,9 @@ import React, { useEffect, useState } from 'react';
 const EventCards = (navigation) => {
 	const [data, setData] = useState({});
 
-	useEffect(() => {
-		fetchData();
-	}, [navigation]);
+	// useEffect(() => {
+	// 	fetchData();
+	// }, [navigation]);
 
 	const fetchData = async () => {
 		try {
