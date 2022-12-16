@@ -36,7 +36,7 @@ const Register = ({ navigation }) => {
 				headers: { authorization: `Bearer ${token}` },
 			});
 			const data = await user.json();
-			const updateFirebaseId = fetch(
+			const updateFirebaseId = await fetch(
 				`${apiBaseUrl}/user/update/firebase/${data.id}`,
 				{
 					method: 'POST',
@@ -54,6 +54,7 @@ const Register = ({ navigation }) => {
 
 	const registerUser = async () => {
 		// Too many API requests
+		setIsLoading(true);
 
 		const data = {
 			email,
@@ -70,7 +71,6 @@ const Register = ({ navigation }) => {
 			) {
 				Alert.alert('Error', 'All fields are required!');
 			} else {
-				setIsLoading(true);
 				fetch(`${apiBaseUrl}/user/register`, {
 					method: 'POST',
 					headers: {
@@ -80,27 +80,20 @@ const Register = ({ navigation }) => {
 					body: JSON.stringify(data),
 				})
 					.then((response) => {
-						if (response.status === 201) {
-							createUserWithEmailAndPassword(auth, email, password)
-								.then(() => {
-									updateFirebaseId();
-								})
-								.catch((error) => {
-									let errorMessage = error.code;
-									if (errorMessage === 'auth/email-already-in-use') {
-										Alert.alert('Error', 'Email already in use!');
-									} else if (errorMessage === 'auth/invalid-email') {
-										Alert.alert('Error', 'Invalid Email');
-									} else if (errorMessage === 'auth/weak-password') {
-										Alert.alert('Error, Password is weak, please try again');
-									}
-								});
-						} else {
-							Alert.alert(
-								'Error',
-								'We were unable to register you, please try again!'
-							);
-						}
+						createUserWithEmailAndPassword(auth, email, password)
+							.then(() => {
+								updateFirebaseId();
+							})
+							.catch((error) => {
+								let errorMessage = error.code;
+								if (errorMessage === 'auth/email-already-in-use') {
+									Alert.alert('Error', 'Email already in use!');
+								} else if (errorMessage === 'auth/invalid-email') {
+									Alert.alert('Error', 'Invalid Email');
+								} else if (errorMessage === 'auth/weak-password') {
+									Alert.alert('Error, Password is weak, please try again');
+								}
+							});
 					})
 					.catch((err) => {
 						Alert.alert(
@@ -108,12 +101,11 @@ const Register = ({ navigation }) => {
 							'We were unable to register you, please try again!'
 						);
 					});
-
-				setIsLoading(false);
 			}
 		} else {
 			Alert.alert('Error', 'Passwords do not match');
 		}
+		setIsLoading(false);
 	};
 
 	useLayoutEffect(() => {
