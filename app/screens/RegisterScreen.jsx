@@ -22,6 +22,7 @@ const Register = ({ navigation }) => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [loading, setIsLoading] = useState(false);
+	const [fireId, setFireId] = useState('');
 
 	let currentUser;
 
@@ -52,16 +53,54 @@ const Register = ({ navigation }) => {
 		}
 	};
 
-	const registerUser = async () => {
-		// Too many API requests
-		setIsLoading(true);
+	const firebaseRegister = async () => {
+		try {
+			await createUserWithEmailAndPassword(auth, email, password);
+			setFireId(auth.currentUser.uid);
+		} catch (err) {
+			let errorMessage = err.code;
+			if (errorMessage === 'auth/email-already-in-use') {
+				Alert.alert('Error', 'Email already in use!');
+			} else if (errorMessage === 'auth/invalid-email') {
+				Alert.alert('Error', 'Invalid Email');
+			} else if (errorMessage === 'auth/weak-password') {
+				Alert.alert('Error, Password is weak, please try again');
+			}
+		}
+	};
 
+	const apiRegister = async () => {
 		const data = {
 			email,
 			password,
 			firstName,
 			lastName,
 		};
+
+		try {
+			await fetch(`${apiBaseUrl}/user/register/${fireId}`, {
+				method: 'POST',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(data),
+			});
+		} catch (err) {
+			Alert.alert('Error', 'We were unable to register you, please try again!');
+		}
+	};
+
+	const registerUser = async () => {
+		// Too many API requests
+		setIsLoading(true);
+
+		// const data = {
+		// 	email,
+		// 	password,
+		// 	firstName,
+		// 	lastName,
+		// };
 		if (password === confirmPassword) {
 			if (
 				email === '' ||
@@ -71,36 +110,37 @@ const Register = ({ navigation }) => {
 			) {
 				Alert.alert('Error', 'All fields are required!');
 			} else {
-				fetch(`${apiBaseUrl}/user/register`, {
-					method: 'POST',
-					headers: {
-						Accept: 'application/json',
-						'Content-Type': 'application/json',
-					},
-					body: JSON.stringify(data),
-				})
-					.then((response) => {
-						createUserWithEmailAndPassword(auth, email, password)
-							.then(() => {
-								updateFirebaseId();
-							})
-							.catch((error) => {
-								let errorMessage = error.code;
-								if (errorMessage === 'auth/email-already-in-use') {
-									Alert.alert('Error', 'Email already in use!');
-								} else if (errorMessage === 'auth/invalid-email') {
-									Alert.alert('Error', 'Invalid Email');
-								} else if (errorMessage === 'auth/weak-password') {
-									Alert.alert('Error, Password is weak, please try again');
-								}
-							});
-					})
-					.catch((err) => {
-						Alert.alert(
-							'Error',
-							'We were unable to register you, please try again!'
-						);
-					});
+				Promise.all([firebaseRegister, apiRegister]).then(() => {});
+				// fetch(`${apiBaseUrl}/user/register`, {
+				// 	method: 'POST',
+				// 	headers: {
+				// 		Accept: 'application/json',
+				// 		'Content-Type': 'application/json',
+				// 	},
+				// 	body: JSON.stringify(data),
+				// })
+				// 	.then((response) => {
+				// 		createUserWithEmailAndPassword(auth, email, password)
+				// 			.then(() => {
+				// 				updateFirebaseId();
+				// 			})
+				// 			.catch((error) => {
+				// 				let errorMessage = error.code;
+				// 				if (errorMessage === 'auth/email-already-in-use') {
+				// 					Alert.alert('Error', 'Email already in use!');
+				// 				} else if (errorMessage === 'auth/invalid-email') {
+				// 					Alert.alert('Error', 'Invalid Email');
+				// 				} else if (errorMessage === 'auth/weak-password') {
+				// 					Alert.alert('Error, Password is weak, please try again');
+				// 				}
+				// 			});
+				// 	})
+				// 	.catch((err) => {
+				// 		Alert.alert(
+				// 			'Error',
+				// 			'We were unable to register you, please try again!'
+				// 		);
+				// 	});
 			}
 		} else {
 			Alert.alert('Error', 'Passwords do not match');
