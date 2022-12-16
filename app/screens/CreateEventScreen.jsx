@@ -7,6 +7,8 @@ import {
 	StyleSheet,
 	Platform,
 	ScrollView,
+	TextInput,
+	SafeAreaView,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Input, Text, Button } from 'react-native-elements';
@@ -16,13 +18,13 @@ import React, { useLayoutEffect, useState } from 'react';
 import { auth } from '../firebase';
 import { Fontisto } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
-import { Feather } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
+import DatePicker from 'react-native-datepicker';
 
 const CreateEventScreen = ({ route, navigation }) => {
 	const { otherParam } = route.params;
-	// const [loading, setIsLoading] = useState(false);
+	const [loading, setIsLoading] = useState(false);
 	const [title, setEventTitle] = useState('');
 	const [tags, setTag] = useState([]);
 	const [description, setEventDescription] = useState('');
@@ -32,14 +34,14 @@ const CreateEventScreen = ({ route, navigation }) => {
 	const [date, setDate] = useState(new Date());
 	const [timePicker, setTimePicker] = useState(false);
 	const [time, setTime] = useState(new Date(Date.now()));
-	const [featherSelected, setFeatherSelected] = useState(false);
-	time.setSeconds(0, 0);
+	const [event, setEvent] = useState('');
 
-	const onChange = (event, selectedDate) => {
-		const currentDate = selectedDate;
-		setShow(false);
-		setDate(currentDate);
-	};
+	var today = new Date();
+	var dd = String(today.getDate()).padStart(2, '0');
+	var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+	var yyyy = today.getFullYear();
+
+	today = dd + '-' + mm + '-' + yyyy;
 
 	const onEventNameChange = (text) => {
 		setEventTitle(text);
@@ -50,13 +52,16 @@ const CreateEventScreen = ({ route, navigation }) => {
 		setTimePicker(false);
 	}
 
+	function onDateSelected(event, value) {
+		setDate(value);
+	}
+
+	function onTimeSelected(event, value) {
+		setTime(value);
+	}
 	function showTimePicker() {
 		setTimePicker(!timePicker);
 		setDatePicker(false);
-	}
-
-	function onDateSelected(event, value) {
-		setDate(value);
 	}
 
 	function onTimeSelected(event, value) {
@@ -70,6 +75,7 @@ const CreateEventScreen = ({ route, navigation }) => {
 	}
 
 	const createNewEvent = async () => {
+		setIsLoading(true);
 		try {
 			const token = await auth.currentUser.getIdToken();
 
@@ -83,8 +89,6 @@ const CreateEventScreen = ({ route, navigation }) => {
 				location,
 			};
 
-			console.log(data);
-
 			const response = await fetch(`${apiBaseUrl}/event/${otherParam}/new`, {
 				method: 'POST',
 				headers: {
@@ -95,25 +99,26 @@ const CreateEventScreen = ({ route, navigation }) => {
 				body: JSON.stringify(data),
 			});
 
-			console.log(response);
+			setEvent(response.data);
 
-			// if (response.status != 201) {
-			// 	alert(
-			// 		'Oops! We were unable to create that event. Try again, please!'
-			// 	);
-			// }
+			if (response.status != 201) {
+				alert('Oops! We were unable to create that event. Try again, please!');
+			} else {
+				console.log(event);
+				navigation.replace('EventDetails', {
+					event: event,
+				});
+			}
 		} catch (err) {
 			console.error(err.message);
 		}
+		setIsLoading(false);
 	};
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
 			headerBackTitle: 'Events',
 			title: 'New Event',
-			headerRight: () => (
-				<Feather onPress={createNewEvent} name='send' size={24} color='black' />
-			),
 		});
 	}, [navigation]);
 
@@ -129,17 +134,18 @@ const CreateEventScreen = ({ route, navigation }) => {
 						Note: All fields required
 					</Text>
 
-					<View className='p-2'>
+					<View>
 						<Input
-							placeholder='Enter a name for your event'
+							placeholder='Event Title'
 							type='text'
 							value={title}
 							onChangeText={(text) => onEventNameChange(text)}
 						/>
+
 						<Input
 							label='Event Description'
 							multiline={true}
-							style={{ height: 70, textAlignVertical: 'top' }}
+							style={{ height: 60, textAlignVertical: 'top' }}
 							placeholder='A brief description of your event. Minimum of 10 characters'
 							type='text'
 							value={description}
@@ -147,14 +153,14 @@ const CreateEventScreen = ({ route, navigation }) => {
 						/>
 
 						<Input
-							placeholder='Address or Location'
+							placeholder='Address/Location'
 							type='text'
 							value={location}
 							onChangeText={(text) => setAddress(text)}
 						/>
 
 						<Input
-							placeholder='Tag e.g. Soccer'
+							placeholder='Tag e.g. Soccer, Volleyball'
 							type='text'
 							value={tags}
 							onChangeText={(text) => onTagSelected(text)}
@@ -163,11 +169,11 @@ const CreateEventScreen = ({ route, navigation }) => {
 						<Input
 							placeholder='Spots available'
 							type='text'
-							keyboardType='numeric'
+							keyboardType={'numeric'}
 							value={spots}
 							onChangeText={(text) => setSpotsAvailable(text)}
 						/>
-
+						<Text class='text-lg'>Select Time & Date</Text>
 						<TouchableOpacity
 							className='flex-row justify-between m-3'
 							onPress={showDatePicker}>
@@ -197,10 +203,9 @@ const CreateEventScreen = ({ route, navigation }) => {
 							className='flex-row justify-between m-3'
 							onPress={showTimePicker}>
 							<View className='flex-row space-x-2 items-center'>
-								<Ionicons name='ios-time-outline' size={24} color='black' />
+								<Ionicons name='ios-time-outline' size={28} color='black' />
 								<Text className='text-lg'>Select Time </Text>
 							</View>
-
 							<Text className='text-lg'>
 								{time.toLocaleTimeString('en-US')}
 							</Text>
@@ -220,23 +225,13 @@ const CreateEventScreen = ({ route, navigation }) => {
 								/>
 							)}
 						</View>
-
-						{/* Holding off on addding photos for now. How do I moderate the photos added? */}
-
-						{/* <TouchableOpacity
-							className='flex-row justify-between m-3'
-							onPress={undefined}>
-							<View className='flex-row space-x-2 items-center'>
-								<FontAwesome name='photo' size={24} color='black' />
-								<Text className='text-lg'>Add Photo</Text>
-							</View>
-							<View className='flex-row space-x-1 items-center'>
-								<Text className='text-lg'>Select Photo</Text>
-								<Ionicons name='chevron-forward' size={32} color='black' />
-							</View>
-						</TouchableOpacity> */}
 					</View>
-					<View style={{ height: 100 }}></View>
+					{loading === true ? (
+						<Button loading title='Login' />
+					) : (
+						<Button raised onPress={createNewEvent} title='Create Event' />
+					)}
+					{/* <View style={{ height: 100 }}></View> */}
 				</KeyboardAvoidingView>
 			</TouchableWithoutFeedback>
 		</ScrollView>
@@ -244,9 +239,17 @@ const CreateEventScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+	title: {
+		textAlign: 'center',
+		fontSize: 20,
+		fontWeight: 'bold',
+		padding: 20,
+	},
+	datePickerStyle: {
+		width: 180,
+	},
 	container: {
 		flex: 1,
-
 		padding: 8,
 	},
 	text: {
@@ -255,15 +258,6 @@ const styles = StyleSheet.create({
 		padding: 3,
 		marginBottom: 10,
 		textAlign: 'center',
-	},
-
-	// Style for iOS ONLY...
-	datePicker: {
-		justifyContent: 'center',
-		alignItems: 'flex-start',
-		width: 320,
-		height: 260,
-		display: 'flex',
 	},
 });
 

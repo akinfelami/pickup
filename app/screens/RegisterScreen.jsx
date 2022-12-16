@@ -2,11 +2,10 @@ import {
 	View,
 	KeyboardAvoidingView,
 	TouchableOpacity,
-	ScrollView,
 	StyleSheet,
 	TouchableWithoutFeedback,
 	Keyboard,
-	TextInput,
+	Alert,
 } from 'react-native';
 import { Input, Text, Button } from 'react-native-elements';
 import { Link } from '@react-navigation/native';
@@ -26,45 +25,94 @@ const Register = ({ navigation }) => {
 
 	let currentUser;
 
-	const registerUser = async () => {
-		let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
-		if (password === confirmPassword && reg.test(email) != false) {
-			try {
-				const data = {
-					email,
-					password,
-					firstName,
-					lastName,
-				};
-				setIsLoading(true);
-
-				await createUserWithEmailAndPassword(auth, email, password);
-
-				const response = await fetch(
-					`${apiBaseUrl}/user/register/${auth.currentUser.uid}`,
-					{
-						method: 'POST',
-						headers: {
-							Accept: 'application/json',
-							'Content-Type': 'application/json',
-						},
-						body: JSON.stringify(data),
-					}
-				);
-
-				if (response.status != 201) {
-					alert(
-						'We were unable to register you. You might\
-						already have an account. Login instead or try again later'
-					);
+	const updateFirebaseId = async () => {
+		try {
+			userData = {
+				firebaseId: auth.currentUser.uid,
+			};
+			const token = await auth.currentUser.getIdToken();
+			const uid = await auth.currentUser.uid;
+			const user = await fetch(`${apiBaseUrl}/user/get/${uid}`, {
+				headers: { authorization: `Bearer ${token}` },
+			});
+			const data = await user.json();
+			const updateFirebaseId = fetch(
+				`${apiBaseUrl}/user/update/firebase/${data.id}`,
+				{
+					method: 'POST',
+					headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(userData),
 				}
+			);
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
+	const registerUser = async () => {
+		// Too many API requests
+
+		const data = {
+			email,
+			password,
+			firstName,
+			lastName,
+		};
+		if (password === confirmPassword) {
+			if (
+				email === '' ||
+				password === '' ||
+				firstName === '' ||
+				lastName === ''
+			) {
+				Alert.alert('Error', 'All fields are required!');
+			} else {
+				setIsLoading(true);
+				fetch(`${apiBaseUrl}/user/register`, {
+					method: 'POST',
+					headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(data),
+				})
+					.then((response) => {
+						if (response.status === 201) {
+							createUserWithEmailAndPassword(auth, email, password)
+								.then(() => {
+									updateFirebaseId();
+								})
+								.catch((error) => {
+									let errorMessage = error.code;
+									if (errorMessage === 'auth/email-already-in-use') {
+										Alert.alert('Error', 'Email already in use!');
+									} else if (errorMessage === 'auth/invalid-email') {
+										Alert.alert('Error', 'Invalid Email');
+									} else if (errorMessage === 'auth/weak-password') {
+										Alert.alert('Error, Password is weak, please try again');
+									}
+								});
+						} else {
+							Alert.alert(
+								'Error',
+								'We were unable to register you, please try again!'
+							);
+						}
+					})
+					.catch((err) => {
+						Alert.alert(
+							'Error',
+							'We were unable to register you, please try again!'
+						);
+					});
 
 				setIsLoading(false);
-			} catch (err) {
-				console.error(err.message);
 			}
 		} else {
-			alert('Your email is invalid or your passwords do not match');
+			Alert.alert('Error', 'Passwords do not match');
 		}
 	};
 
@@ -79,7 +127,7 @@ const Register = ({ navigation }) => {
 			<KeyboardAvoidingView
 				style={styles.container}
 				behavior={Platform.OS === 'ios' ? 'padding' : null}>
-				<StatusBar style='dark' />
+				<StatusBar style='light' />
 				<View>
 					<Text className='mb-5 text-center' h3>
 						{' '}
@@ -101,6 +149,7 @@ const Register = ({ navigation }) => {
 						/>
 						<Input
 							placeholder='Email'
+							autoCapitalize='none'
 							type='email'
 							value={email}
 							onChangeText={(text) => setEmail(text)}
@@ -122,9 +171,17 @@ const Register = ({ navigation }) => {
 						/>
 					</View>
 					{loading === true ? (
-						<Button loading title='Register' />
+						<Button type='outline' loading title='Register' />
 					) : (
-						<Button raised onPress={registerUser} title='Register' />
+						<Button
+							buttonStyle={{
+								backgroundColor: '#102e48',
+								borderRadius: 5,
+							}}
+							raised
+							onPress={registerUser}
+							title='Register'
+						/>
 					)}
 
 					<View className='pt-4 items-center flex-row space-x-1'>
@@ -147,7 +204,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		alignItems: 'center',
 		justifyContent: 'center',
-		padding: 8,
+		padding: 10,
 		backgroundColor: 'white',
 	},
 });

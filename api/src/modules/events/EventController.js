@@ -66,7 +66,6 @@ const createEvent = async (req, res) => {
 
 		res.status(201).json(event);
 	} catch (err) {
-		console.log(err);
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
 };
