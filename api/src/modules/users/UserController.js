@@ -90,7 +90,6 @@ const registerUser = async (req, res) => {
 			username: firstName,
 			firstName,
 			lastName,
-			firebaseId: req.params.firebaseId,
 			email: email.toLowerCase(),
 			password: encryptedPassword,
 		});
