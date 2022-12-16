@@ -80,27 +80,20 @@ const Register = ({ navigation }) => {
 					body: JSON.stringify(data),
 				})
 					.then((response) => {
-						if (response.status === 201) {
-							createUserWithEmailAndPassword(auth, email, password)
-								.then(() => {
-									updateFirebaseId();
-								})
-								.catch((error) => {
-									let errorMessage = error.code;
-									if (errorMessage === 'auth/email-already-in-use') {
-										Alert.alert('Error', 'Email already in use!');
-									} else if (errorMessage === 'auth/invalid-email') {
-										Alert.alert('Error', 'Invalid Email');
-									} else if (errorMessage === 'auth/weak-password') {
-										Alert.alert('Error, Password is weak, please try again');
-									}
-								});
-						} else {
-							Alert.alert(
-								'Error',
-								'We were unable to register you, please try again!'
-							);
-						}
+						createUserWithEmailAndPassword(auth, email, password)
+							.then(() => {
+								updateFirebaseId();
+							})
+							.catch((error) => {
+								let errorMessage = error.code;
+								if (errorMessage === 'auth/email-already-in-use') {
+									Alert.alert('Error', 'Email already in use!');
+								} else if (errorMessage === 'auth/invalid-email') {
+									Alert.alert('Error', 'Invalid Email');
+								} else if (errorMessage === 'auth/weak-password') {
+									Alert.alert('Error, Password is weak, please try again');
+								}
+							});
 					})
 					.catch((err) => {
 						Alert.alert(
