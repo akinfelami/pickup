@@ -22,9 +22,6 @@ const Register = ({ navigation }) => {
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
 	const [loading, setIsLoading] = useState(false);
-	const [fireId, setFireId] = useState('');
-
-	let currentUser;
 
 	const updateFirebaseId = async () => {
 		try {
@@ -37,7 +34,8 @@ const Register = ({ navigation }) => {
 				headers: { authorization: `Bearer ${token}` },
 			});
 			const data = await user.json();
-			const updateFirebaseId = await fetch(
+			console.log(data);
+			const response = await fetch(
 				`${apiBaseUrl}/user/update/firebase/${data.id}`,
 				{
 					method: 'POST',
@@ -48,6 +46,7 @@ const Register = ({ navigation }) => {
 					body: JSON.stringify(userData),
 				}
 			);
+			console.log(response.status);
 		} catch (err) {
 			console.error(err);
 		}
@@ -56,7 +55,7 @@ const Register = ({ navigation }) => {
 	const firebaseRegister = async () => {
 		try {
 			await createUserWithEmailAndPassword(auth, email, password);
-			setFireId(auth.currentUser.uid);
+			await updateFirebaseId();
 		} catch (err) {
 			let errorMessage = err.code;
 			if (errorMessage === 'auth/email-already-in-use') {
@@ -76,9 +75,8 @@ const Register = ({ navigation }) => {
 			firstName,
 			lastName,
 		};
-
 		try {
-			await fetch(`${apiBaseUrl}/user/register/${fireId}`, {
+			await fetch(`${apiBaseUrl}/user/register/`, {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
@@ -94,13 +92,6 @@ const Register = ({ navigation }) => {
 	const registerUser = async () => {
 		// Too many API requests
 		setIsLoading(true);
-
-		// const data = {
-		// 	email,
-		// 	password,
-		// 	firstName,
-		// 	lastName,
-		// };
 		if (password === confirmPassword) {
 			if (
 				email === '' ||
@@ -110,37 +101,12 @@ const Register = ({ navigation }) => {
 			) {
 				Alert.alert('Error', 'All fields are required!');
 			} else {
-				Promise.all([firebaseRegister, apiRegister]).then(() => {});
-				// fetch(`${apiBaseUrl}/user/register`, {
-				// 	method: 'POST',
-				// 	headers: {
-				// 		Accept: 'application/json',
-				// 		'Content-Type': 'application/json',
-				// 	},
-				// 	body: JSON.stringify(data),
-				// })
-				// 	.then((response) => {
-				// 		createUserWithEmailAndPassword(auth, email, password)
-				// 			.then(() => {
-				// 				updateFirebaseId();
-				// 			})
-				// 			.catch((error) => {
-				// 				let errorMessage = error.code;
-				// 				if (errorMessage === 'auth/email-already-in-use') {
-				// 					Alert.alert('Error', 'Email already in use!');
-				// 				} else if (errorMessage === 'auth/invalid-email') {
-				// 					Alert.alert('Error', 'Invalid Email');
-				// 				} else if (errorMessage === 'auth/weak-password') {
-				// 					Alert.alert('Error, Password is weak, please try again');
-				// 				}
-				// 			});
-				// 	})
-				// 	.catch((err) => {
-				// 		Alert.alert(
-				// 			'Error',
-				// 			'We were unable to register you, please try again!'
-				// 		);
-				// 	});
+				try {
+					await apiRegister();
+					await firebaseRegister();
+				} catch (err) {
+					console.error(err);
+				}
 			}
 		} else {
 			Alert.alert('Error', 'Passwords do not match');
@@ -203,7 +169,15 @@ const Register = ({ navigation }) => {
 						/>
 					</View>
 					{loading === true ? (
-						<Button type='outline' loading title='Register' />
+						<Button
+							buttonStyle={{
+								backgroundColor: '#102e48',
+								borderRadius: 5,
+							}}
+							type='outline'
+							loading
+							title='Register'
+						/>
 					) : (
 						<Button
 							buttonStyle={{
