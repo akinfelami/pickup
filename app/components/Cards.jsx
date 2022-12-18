@@ -5,7 +5,7 @@ import { Feather } from '@expo/vector-icons';
 const Cards = ({ item }) => {
 	return (
 		<View>
-			<TouchableOpacity>
+			<TouchableOpacity style={[styles.card, styles.shadowProp]}>
 				<Text
 					style={{ fontSize: '20px' }}
 					className='font-bold text-lg text-gray-700'>
@@ -15,26 +15,33 @@ const Cards = ({ item }) => {
 					Title
 				</Text>
 				<Text className='text-lg'>Leadner Soccer/Futbol/Footbal/Funchibol</Text>
-				<View className='mt-2 mb-2 flex-row items-center space-x-2'>
+				<View className='flex-row items-center space-x-2'>
 					<View>
 						<Text className='text-lg mr-20'>12 going · location</Text>
 					</View>
 					<Feather name='bookmark' size={20} color='grey' />
 					<Feather name='share' size={20} color='grey' />
 				</View>
-				<View
-					style={{
-						borderBottomColor: 'black',
-						borderBottomWidth: StyleSheet.hairlineWidth,
-						marginBottom: 5,
-						marginTop: 5,
-					}}
-				/>
 			</TouchableOpacity>
 		</View>
 	);
 };
 
-export default Cards;
+const styles = StyleSheet.create({
+	card: {
+		borderRadius: 15,
+		backgroundColor: 'white',
+		paddingVertical: 20,
+		paddingHorizontal: 20,
+		width: '100%',
+		marginVertical: 10,
+	},
+	shadowProp: {
+		shadowColor: '#171717',
+		shadowOffset: { width: -2, height: 4 },
+		shadowOpacity: 0.2,
+		shadowRadius: 3,
+	},
+});
 
-const styles = StyleSheet.create({});
+export default Cards;
