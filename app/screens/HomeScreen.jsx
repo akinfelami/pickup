@@ -14,6 +14,7 @@ import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { apiBaseUrl } from '../constants';
 import { StatusBar } from 'expo-status-bar';
 import { EvilIcons } from '@expo/vector-icons';
+import EventCards from '../components/Events';
 
 const Home = ({ route, navigation }) => {
 	const [userData, setUserData] = useState({});
@@ -100,44 +101,45 @@ const Home = ({ route, navigation }) => {
 		<SafeAreaView style={styles.container}>
 			<StatusBar style='dark' />
 
-			<ScrollView>
-				<View style={styles.headerContainer}>
-					<View className='flex-row items-center p-5'>
-						<TouchableOpacity onPress={signOutDialog}>
-							<Image
-								source={require('../assets/profileimg.png')}
-								style={{ width: 40, height: 40 }}
-							/>
-						</TouchableOpacity>
-						<Text style={{ marginLeft: 10 }} h4>
-							Hi{`, ${userName}`}
-						</Text>
-					</View>
-					<View style={{ paddingLeft: 20, paddingRight: 20 }}>
-						<Text>
-							{currentDay}, {currentMonth} {d.getDate()}
-						</Text>
-						<Text h3 className='font-bold'>
-							Upcoming Events
-						</Text>
+			<View style={styles.headerContainer}>
+				<View className='flex-row items-center p-5'>
+					<TouchableOpacity onPress={signOutDialog}>
+						<Image
+							source={require('../assets/profileimg.png')}
+							style={{ width: 40, height: 40 }}
+						/>
+					</TouchableOpacity>
+					<Text style={{ marginLeft: 10 }} h4>
+						Hi{`, ${userName}`}
+					</Text>
+				</View>
+				<View style={{ paddingLeft: 20, paddingRight: 20 }}>
+					<Text>
+						{currentDay}, {currentMonth} {d.getDate()}
+					</Text>
 
-						{/* Search  */}
-						<View className='flex-row items-center space-x-2 pt-5'>
-							<View className='flex-row flex-1 space-x-2 bg-gray-200 p-3'>
-								<EvilIcons name='search' size={24} color='black' />
-								<TextInput
-									autoCapitalize='none'
-									value={search}
-									onChangeText={(text) => setSearch(text)}
-									keyboardType='default'
-									onSubmitEditing={searchSubmit}
-									placeholder='Search'
-									returnKeyType='search'
-								/>
-							</View>
+					{/* Search  */}
+					<View className='flex-row items-center space-x-2 pt-5'>
+						<View className='flex-row flex-1 space-x-2 bg-gray-200 p-3'>
+							<EvilIcons name='search' size={24} color='black' />
+							<TextInput
+								autoCapitalize='none'
+								value={search}
+								onChangeText={(text) => setSearch(text)}
+								keyboardType='default'
+								onSubmitEditing={searchSubmit}
+								placeholder='Search'
+								returnKeyType='search'
+							/>
 						</View>
 					</View>
+					<Text h3 className='font-bold mt-5 '>
+						Upcoming Events
+					</Text>
 				</View>
+			</View>
+			<ScrollView nestedScrollEnabled={true}>
+				<EventCards />
 			</ScrollView>
 		</SafeAreaView>
 	);

@@ -1,6 +1,6 @@
 import { View, ScrollView } from 'react-native';
 import { Image, Text, Button } from 'react-native-elements';
-import EventCard from '../components/EventCards';
+import EventCard from '../components/Events';
 import React from 'react';
 
 const All = () => {
