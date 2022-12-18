@@ -5,6 +5,7 @@ import Past from '../screens/Past';
 import Going from '../screens/Going';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import Saved from '../screens/Saved';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const FirstRoute = () => <All />;
 
@@ -49,6 +50,8 @@ const Tabs = () => {
 		{ key: 'third', title: 'GOING' },
 		{ key: 'second', title: 'PAST' },
 	]);
+
+	const Tab = createBottomTabNavigator();
 
 	return (
 		<TabView
