@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import Card from './Cards';
 import Loading from './Loading';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const EventCards = (navigation) => {
 	const [data, setData] = useState({});
@@ -45,31 +46,53 @@ const EventCards = (navigation) => {
 			id: '58694a0f-3da1-471f-bd96-145571e29d72',
 			title: 'Third Item',
 		},
+		{
+			id: '58694a0f-3da1-471f-bd96-145571e39d72',
+			title: 'Fourth Item',
+		},
+		{
+			id: '58694a0f-3da1-471f-bd96-145571e344d72',
+			title: 'Fifth Item',
+		},
 	];
 
 	const renderItem = ({ item }) => <Card item={item} />;
+	const ItemSeparatorComponentView = () => (
+		<View
+			style={{
+				borderBottomColor: 'black',
+				borderBottomWidth: StyleSheet.hairlineWidth,
+				marginBottom: 5,
+				marginTop: 5,
+			}}
+		/>
+	);
 
 	return (
 		<>
-			<View className='ml-3 mt-5 px-3'>
-				<StatusBar style='auto' />
+			<StatusBar style='auto' />
 
-				<View>
-					{DATA ? (
-						<FlatList
-							data={DATA}
-							renderItem={renderItem}
-							keyExtractor={(item) => item.id}
-						/>
-					) : (
-						<Loading />
-					)}
+			{DATA ? (
+				<View className='ml-3 mt-5 px-3' style={styles.container}>
+					<FlatList
+						data={DATA}
+						renderItem={renderItem}
+						keyExtractor={(item) => item.id}
+						// ItemSeparatorComponent={ItemSeparatorComponentView}
+					/>
 				</View>
-			</View>
+			) : (
+				<Loading />
+			)}
 		</>
 	);
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		borderRadius: 15,
+	},
+});
 
 export default EventCards;
