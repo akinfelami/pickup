@@ -12,9 +12,7 @@ import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { apiBaseUrl } from '../constants';
-import Tabs from '../components/Tabs';
 import { StatusBar } from 'expo-status-bar';
-
 import { EvilIcons } from '@expo/vector-icons';
 
 const Home = ({ route, navigation }) => {
@@ -101,6 +99,7 @@ const Home = ({ route, navigation }) => {
 	return (
 		<SafeAreaView style={styles.container}>
 			<StatusBar style='dark' />
+
 			<ScrollView>
 				<View style={styles.headerContainer}>
 					<View className='flex-row items-center p-5'>
@@ -128,10 +127,9 @@ const Home = ({ route, navigation }) => {
 								<EvilIcons name='search' size={24} color='black' />
 								<TextInput
 									autoCapitalize='none'
-									// value={search}
+									value={search}
 									onChangeText={(text) => setSearch(text)}
 									keyboardType='default'
-									blurOnSubmit={true}
 									onSubmitEditing={searchSubmit}
 									placeholder='Search'
 									returnKeyType='search'
@@ -148,6 +146,7 @@ const Home = ({ route, navigation }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		backgroundColor: 'white',
 	},
 	headerContainer: {
 		marginBottom: 10,

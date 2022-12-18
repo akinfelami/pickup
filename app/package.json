@@ -27,7 +27,8 @@
     "react-native-screens": "^3.15.0",
     "react-native-tab-view": "^3.1.1",
     "tailwindcss-react-native": "^1.7.10",
-    "expo-blur": "~11.2.0"
+    "expo-blur": "~11.2.0",
+    "expo-linear-gradient": "~11.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
