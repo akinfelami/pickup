@@ -69,7 +69,7 @@ const EventCards = (navigation) => {
 	return (
 		<>
 			{DATA ? (
-				<View className='p-1' style={styles.container}>
+				<View className='p-4' style={styles.container}>
 					<FlatList
 						data={DATA}
 						renderItem={renderItem}
