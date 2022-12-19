@@ -15,6 +15,7 @@ import { apiBaseUrl } from '../constants';
 import { StatusBar } from 'expo-status-bar';
 import { EvilIcons } from '@expo/vector-icons';
 import EventCards from '../components/Events';
+import CreateEventButton from '../components/CreateEventButton';
 
 const Home = ({ route, navigation }) => {
 	const [userData, setUserData] = useState({});
@@ -141,6 +142,7 @@ const Home = ({ route, navigation }) => {
 			<ScrollView nestedScrollEnabled={true}>
 				<EventCards />
 			</ScrollView>
+			<CreateEventButton />
 		</SafeAreaView>
 	);
 };
@@ -148,7 +150,6 @@ const Home = ({ route, navigation }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		// backgroundColor: 'white',
 	},
 	headerContainer: {
 		marginBottom: 10,
