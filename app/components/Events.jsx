@@ -62,18 +62,14 @@ const EventCards = (navigation) => {
 			style={{
 				borderBottomColor: 'black',
 				borderBottomWidth: StyleSheet.hairlineWidth,
-				marginBottom: 5,
-				marginTop: 5,
 			}}
 		/>
 	);
 
 	return (
 		<>
-			<StatusBar style='auto' />
-
 			{DATA ? (
-				<View className='ml-3 mt-5 px-3' style={styles.container}>
+				<View className='p-1' style={styles.container}>
 					<FlatList
 						data={DATA}
 						renderItem={renderItem}
