@@ -27,7 +27,12 @@ const renderScene = SceneMap({
 const renderTabBar = (props) => (
 	<TabBar
 		{...props}
-		indicatorStyle={{ backgroundColor: 'black' }}
+		indicatorStyle={{
+			backgroundColor: '#102e48',
+			height: 3,
+			width: 100,
+			borderRadius: 10,
+		}}
 		renderLabel={({ route, color }) => (
 			<Text
 				style={{
@@ -66,9 +71,7 @@ const Tabs = () => {
 };
 
 const styles = StyleSheet.create({
-	container: {
-		marginTop: StatusBar.currentHeight,
-	},
+	container: {},
 	scene: {
 		flex: 1,
 	},

@@ -18,7 +18,7 @@ const Login = ({ navigation }) => {
 	useEffect(() => {
 		const unsub = onAuthStateChanged(auth, (authUser) => {
 			if (authUser) {
-				navigation.replace('Home');
+				navigation.replace('Index');
 			}
 		});
 		return unsub;

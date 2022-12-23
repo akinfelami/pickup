@@ -14,16 +14,17 @@ import { StatusBar } from 'expo-status-bar';
 import { Input, Text, Button } from 'react-native-elements';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { apiBaseUrl } from '../constants';
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState, useRef } from 'react';
 import { auth } from '../firebase';
 import { Fontisto } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { Octicons } from '@expo/vector-icons';
 import DatePicker from 'react-native-datepicker';
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+import { PLACES_API } from '@env';
 
 const CreateEventScreen = ({ route, navigation }) => {
-	const { otherParam } = route.params;
 	const [loading, setIsLoading] = useState(false);
 	const [title, setEventTitle] = useState('');
 	const [tags, setTag] = useState([]);
@@ -35,6 +36,8 @@ const CreateEventScreen = ({ route, navigation }) => {
 	const [timePicker, setTimePicker] = useState(false);
 	const [time, setTime] = useState(new Date(Date.now()));
 	const [event, setEvent] = useState('');
+
+	const placesRef = useRef();
 
 	var today = new Date();
 	var dd = String(today.getDate()).padStart(2, '0');
@@ -117,124 +120,152 @@ const CreateEventScreen = ({ route, navigation }) => {
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
-			headerBackTitle: 'Events',
+			headerBackTitle: 'Home',
 			title: 'New Event',
 		});
 	}, [navigation]);
 
 	return (
-		<ScrollView style={{ backgroundColor: 'white' }}>
-			<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-				<KeyboardAvoidingView
-					className='w-full'
-					style={styles.container}
-					behavior={Platform.OS === 'ios' ? 'padding' : null}>
-					<StatusBar style='light' />
-					<Text h6 className='text-red-500 p-2'>
-						All fields required
-					</Text>
+		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+			<KeyboardAvoidingView
+				style={styles.container}
+				behavior={Platform.OS === 'ios' ? 'padding' : null}>
+				<StatusBar style='light' />
+				<Text h6 className='text-red-500 p-2'>
+					All fields required*
+				</Text>
+
+				<View style={styles.inputContainer}>
+					<Input
+						placeholder='Event Title'
+						type='text'
+						value={title}
+						onChangeText={(text) => onEventNameChange(text)}
+					/>
+
+					<Input
+						label='Event Description'
+						multiline={true}
+						style={{ height: 60, textAlignVertical: 'top' }}
+						placeholder='A brief description of your event. Minimum of 10 characters'
+						type='text'
+						value={description}
+						onChangeText={(text) => setEventDescription(text)}
+					/>
+
+					<GooglePlacesAutocomplete
+						placeholder='Enter a location'
+						onPress={(data, details = null) => {
+							setAddress(placesRef.current?.getAddressText());
+							console.log(placesRef.current?.getAddressText());
+						}}
+						ref={placesRef}
+						query={{
+							key: PLACES_API,
+							language: 'en',
+						}}
+						fetchDetails={true}
+						onFail={(error) => console.log(error)}
+						onNotFound={() => console.log('no results')}
+						value={location}
+						styles={{
+							container: {
+								flex: 0,
+								backgroundColor: null,
+							},
+
+							predefinedPlacesDescription: {
+								color: '#3caf50',
+							},
+						}}
+					/>
+
+					{/* <Input
+						placeholder='Tag e.g. Soccer, Volleyball'
+						type='text'
+						value={tags}
+						onChangeText={(text) => onTagSelected(text)}
+					/> */}
+
+					<Input
+						placeholder='Spots available'
+						type='text'
+						keyboardType={'numeric'}
+						value={spots}
+						onChangeText={(text) => setSpotsAvailable(text)}
+					/>
+
+					<TouchableOpacity
+						className='flex-row justify-between m-3'
+						onPress={showDatePicker}>
+						<View className='flex-row space-x-2 items-center'>
+							<Fontisto name='date' size={24} color='black' />
+							<Text className='text-lg'>Select Date </Text>
+						</View>
+						<Text className='text-lg'>{date.toDateString()}</Text>
+					</TouchableOpacity>
 
 					<View>
-						<Input
-							placeholder='Event Title'
-							type='text'
-							value={title}
-							onChangeText={(text) => onEventNameChange(text)}
-						/>
-
-						<Input
-							label='Event Description'
-							multiline={true}
-							style={{ height: 60, textAlignVertical: 'top' }}
-							placeholder='A brief description of your event. Minimum of 10 characters'
-							type='text'
-							value={description}
-							onChangeText={(text) => setEventDescription(text)}
-						/>
-
-						<Input
-							placeholder='Address/Location'
-							type='text'
-							value={location}
-							onChangeText={(text) => setAddress(text)}
-						/>
-
-						<Input
-							placeholder='Tag e.g. Soccer, Volleyball'
-							type='text'
-							value={tags}
-							onChangeText={(text) => onTagSelected(text)}
-						/>
-
-						<Input
-							placeholder='Spots available'
-							type='text'
-							keyboardType={'numeric'}
-							value={spots}
-							onChangeText={(text) => setSpotsAvailable(text)}
-						/>
-						<Text class='text-lg'>Select Time & Date</Text>
-						<TouchableOpacity
-							className='flex-row justify-between m-3'
-							onPress={showDatePicker}>
-							<View className='flex-row space-x-2 items-center'>
-								<Fontisto name='date' size={24} color='black' />
-								<Text className='text-lg'>Select Date </Text>
-							</View>
-							<Text className='text-lg'>{date.toDateString()}</Text>
-						</TouchableOpacity>
-
-						<View>
-							{datePicker && (
-								<DateTimePicker
-									textColor='black'
-									themeVariant='dark'
-									value={date}
-									mode={'date'}
-									display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-									is24Hour={true}
-									onChange={onDateSelected}
-									style={StyleSheet.datePicker}
-								/>
-							)}
-						</View>
-
-						<TouchableOpacity
-							className='flex-row justify-between m-3'
-							onPress={showTimePicker}>
-							<View className='flex-row space-x-2 items-center'>
-								<Ionicons name='ios-time-outline' size={28} color='black' />
-								<Text className='text-lg'>Select Time </Text>
-							</View>
-							<Text className='text-lg'>
-								{time.toLocaleTimeString('en-US')}
-							</Text>
-						</TouchableOpacity>
-
-						<View>
-							{timePicker && (
-								<DateTimePicker
-									textColor='black'
-									themeVariant='dark'
-									value={time}
-									mode={'time'}
-									display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-									is24Hour={false}
-									onChange={onTimeSelected}
-									style={StyleSheet.datePicker}
-								/>
-							)}
-						</View>
+						{datePicker && (
+							<DateTimePicker
+								textColor='black'
+								themeVariant='dark'
+								value={date}
+								mode={'date'}
+								display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+								is24Hour={true}
+								onChange={onDateSelected}
+								style={StyleSheet.datePicker}
+							/>
+						)}
 					</View>
-					{loading === true ? (
-						<Button loading title='Login' />
-					) : (
-						<Button raised onPress={createNewEvent} title='Create Event' />
-					)}
-					{/* <View style={{ height: 100 }}></View> */}
-				</KeyboardAvoidingView>
-			</TouchableWithoutFeedback>
-		</ScrollView>
+
+					<TouchableOpacity
+						className='flex-row justify-between m-3'
+						onPress={showTimePicker}>
+						<View className='flex-row space-x-2 items-center'>
+							<Ionicons name='ios-time-outline' size={28} color='black' />
+							<Text className='text-lg'>Select Time </Text>
+						</View>
+						<Text className='text-lg'>{time.toLocaleTimeString('en-US')}</Text>
+					</TouchableOpacity>
+
+					<View>
+						{timePicker && (
+							<DateTimePicker
+								textColor='black'
+								themeVariant='dark'
+								value={time}
+								mode={'time'}
+								display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+								is24Hour={false}
+								onChange={onTimeSelected}
+								style={StyleSheet.datePicker}
+							/>
+						)}
+					</View>
+				</View>
+				{loading === true ? (
+					<Button
+						containerStyle={styles.button}
+						buttonStyle={{ backgroundColor: '#102e48' }}
+						loading
+						title='Login'
+					/>
+				) : (
+					<Button
+						containerStyle={styles.button}
+						buttonStyle={{
+							backgroundColor: '#102e48',
+							borderRadius: 5,
+						}}
+						onPress={createNewEvent}
+						title='Create Event'
+					/>
+				)}
+				<View style={{ height: 200 }}></View>
+			</KeyboardAvoidingView>
+		</TouchableWithoutFeedback>
 	);
 };
 
@@ -245,12 +276,19 @@ const styles = StyleSheet.create({
 		fontWeight: 'bold',
 		padding: 20,
 	},
+	inputContainer: {
+		width: 300,
+	},
 	datePickerStyle: {
 		width: 180,
 	},
 	container: {
 		flex: 1,
-		padding: 8,
+		paddingTop: 10,
+		alignItems: 'center',
+	},
+	button: {
+		width: 250,
 	},
 	text: {
 		fontSize: 25,

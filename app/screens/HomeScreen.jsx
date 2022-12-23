@@ -15,9 +15,10 @@ import { apiBaseUrl } from '../constants';
 import { StatusBar } from 'expo-status-bar';
 import { EvilIcons } from '@expo/vector-icons';
 import EventCards from '../components/Events';
-import CreateEventButton from '../components/CreateEventButton';
+import { Feather } from '@expo/vector-icons';
+import Tabs from '../components/Tabs';
 
-const Home = ({ route, navigation }) => {
+const Home = ({ navigation }) => {
 	const [userData, setUserData] = useState({});
 	const [userName, setUserName] = useState('');
 	const [search, setSearch] = useState('');
@@ -60,19 +61,11 @@ const Home = ({ route, navigation }) => {
 			{
 				text: 'Sign out',
 				onPress: () => {
-					signOutUser;
+					signOut(auth);
+					navigation.replace('Login');
 				},
 			},
 		]);
-	};
-
-	const signOutUser = async () => {
-		try {
-			await signOut(auth);
-			navigation.replace('Login');
-		} catch (err) {
-			console.error(err);
-		}
 	};
 
 	useEffect(() => {
@@ -119,30 +112,27 @@ const Home = ({ route, navigation }) => {
 						{currentDay}, {currentMonth} {d.getDate()}
 					</Text>
 
-					{/* Search  */}
-					<View className='flex-row items-center space-x-2 pt-5'>
-						<View className='flex-row flex-1 space-x-2 bg-gray-200 p-3'>
-							<EvilIcons name='search' size={24} color='black' />
-							<TextInput
-								autoCapitalize='none'
-								value={search}
-								onChangeText={(text) => setSearch(text)}
-								keyboardType='default'
-								onSubmitEditing={searchSubmit}
-								placeholder='Search'
-								returnKeyType='search'
-							/>
-						</View>
-					</View>
-					<Text h3 className='font-bold mt-5 '>
+					<Text h3 className='font-bold'>
 						Upcoming Events
 					</Text>
 				</View>
 			</View>
-			<ScrollView nestedScrollEnabled={true}>
-				<EventCards />
-			</ScrollView>
-			<CreateEventButton />
+
+			<Tabs />
+
+			<View style={styles.createEventButton}>
+				<Button
+					buttonStyle={{
+						height: 60,
+						width: 60,
+						borderRadius: 100,
+						backgroundColor: '#102e48',
+					}}
+					icon={<Feather name='plus' size={30} color='white' />}
+					containerStyle={styles.button}
+					onPress={() => navigation.navigate('CreateEvent')}
+				/>
+			</View>
 		</SafeAreaView>
 	);
 };
@@ -153,6 +143,13 @@ const styles = StyleSheet.create({
 	},
 	headerContainer: {
 		marginBottom: 10,
+	},
+	createEventButton: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		position: 'absolute',
+		bottom: 10,
+		right: 10,
 	},
 });
 
