@@ -4,7 +4,7 @@ import { Feather } from '@expo/vector-icons';
 
 const Cards = ({ item }) => {
 	return (
-		<View styles={{ padding: 20 }}>
+		<View>
 			<TouchableOpacity style={[styles.card, styles.shadowProp]}>
 				<Text
 					style={{ fontSize: '20px' }}
@@ -37,10 +37,10 @@ const styles = StyleSheet.create({
 		marginVertical: 10,
 	},
 	shadowProp: {
-		shadowColor: '#171717',
-		shadowOffset: { width: -2, height: 4 },
-		shadowOpacity: 0.2,
-		shadowRadius: 5,
+		// shadowColor: '#171717',
+		// shadowOffset: { width: -2, height: 4 },
+		// shadowOpacity: 0.2,
+		// shadowRadius: 15,
 	},
 });
 

@@ -54,27 +54,26 @@ const EventCards = (navigation) => {
 			id: '58694a0f-3da1-471f-bd96-145571e344d72',
 			title: 'Fifth Item',
 		},
+		{
+			id: '58694a0f-3da1-34371f-bd96-145571e344d72',
+			title: 'Sixth Item',
+		},
+		{
+			id: '58644a0f-3da1-34371f-bd96-145571e344d72',
+			title: 'Seventh Item',
+		},
 	];
 
 	const renderItem = ({ item }) => <Card item={item} />;
-	const ItemSeparatorComponentView = () => (
-		<View
-			style={{
-				borderBottomColor: 'black',
-				borderBottomWidth: StyleSheet.hairlineWidth,
-			}}
-		/>
-	);
 
 	return (
 		<>
 			{DATA ? (
-				<View className='p-4' style={styles.container}>
+				<View className='pl-4 pr-4 mt-2' style={styles.container}>
 					<FlatList
 						data={DATA}
 						renderItem={renderItem}
 						keyExtractor={(item) => item.id}
-						// ItemSeparatorComponent={ItemSeparatorComponentView}
 					/>
 				</View>
 			) : (
@@ -87,7 +86,6 @@ const EventCards = (navigation) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		borderRadius: 15,
 	},
 });
 

@@ -1,19 +1,15 @@
 import { View, ScrollView } from 'react-native';
 import { Image, Text, Button } from 'react-native-elements';
-import EventCard from '../components/Events';
+import EventCards from '../components/Events';
+
 import React from 'react';
 
 const All = () => {
 	return (
-		<ScrollView className='pb-36'>
-			{/* <EventCard />
-			<EventCard />
-			<EventCard />
-			<EventCard />
-			<EventCard />
-			<EventCard />
-			<EventCard /> */}
-		</ScrollView>
+		<View></View>
+		// <ScrollView>
+		// 	<EventCards />
+		// </ScrollView>
 	);
 };
 
