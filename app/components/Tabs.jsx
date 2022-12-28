@@ -5,6 +5,7 @@ import Past from '../screens/Past';
 import Going from '../screens/Going';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import Saved from '../screens/Saved';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const FirstRoute = () => <All />;
 
@@ -26,7 +27,12 @@ const renderScene = SceneMap({
 const renderTabBar = (props) => (
 	<TabBar
 		{...props}
-		indicatorStyle={{ backgroundColor: 'black' }}
+		indicatorStyle={{
+			backgroundColor: '#102e48',
+			height: 3,
+			width: 100,
+			borderRadius: 10,
+		}}
 		renderLabel={({ route, color }) => (
 			<Text
 				style={{
@@ -50,6 +56,8 @@ const Tabs = () => {
 		{ key: 'second', title: 'PAST' },
 	]);
 
+	const Tab = createBottomTabNavigator();
+
 	return (
 		<TabView
 			renderTabBar={renderTabBar}
@@ -63,9 +71,7 @@ const Tabs = () => {
 };
 
 const styles = StyleSheet.create({
-	container: {
-		marginTop: StatusBar.currentHeight,
-	},
+	container: {},
 	scene: {
 		flex: 1,
 	},
