@@ -171,7 +171,7 @@ const CreateEventScreen = ({ route, navigation }) => {
 						styles={{
 							container: {
 								flex: 0,
-								backgroundColor: null,
+								backgroundColor: 'white',
 							},
 
 							predefinedPlacesDescription: {
@@ -190,6 +190,7 @@ const CreateEventScreen = ({ route, navigation }) => {
 					<Input
 						placeholder='Spots available'
 						type='text'
+						style={{ width: 100 }}
 						keyboardType={'numeric'}
 						value={spots}
 						onChangeText={(text) => setSpotsAvailable(text)}
@@ -274,10 +275,10 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		fontSize: 20,
 		fontWeight: 'bold',
-		padding: 20,
 	},
 	inputContainer: {
-		width: 300,
+		padding: 20,
+		width: '100%',
 	},
 	datePickerStyle: {
 		width: 180,
@@ -288,7 +289,8 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	button: {
-		width: 250,
+		width: 200,
+		borderRadius: 10,
 	},
 	text: {
 		fontSize: 25,

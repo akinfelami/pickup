@@ -6,10 +6,9 @@ import React from 'react';
 
 const All = () => {
 	return (
-		<View></View>
-		// <ScrollView>
-		// 	<EventCards />
-		// </ScrollView>
+		<ScrollView>
+			<EventCards />
+		</ScrollView>
 	);
 };
 

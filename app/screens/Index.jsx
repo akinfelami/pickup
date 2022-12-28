@@ -8,7 +8,6 @@ import {
 import React, { useState } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './HomeScreen';
-import Profile from './Profile';
 import Explore from './Explore';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -50,7 +49,6 @@ const Index = ({ navigation }) => {
 			<Tab.Screen
 				options={{
 					headerShown: true,
-
 					tabBarLabel: 'Explore',
 					tabBarIcon: ({ color, size }) => (
 						<TouchableOpacity>
@@ -65,23 +63,6 @@ const Index = ({ navigation }) => {
 				}}
 				name='Explore'
 				component={Explore}
-			/>
-
-			<Tab.Screen
-				options={{
-					tabBarIcon: ({ color, size }) => (
-						<TouchableOpacity>
-							<Ionicons
-								name='person'
-								size={28}
-								color={color}
-								onPress={() => navigation.navigate('Profile')}
-							/>
-						</TouchableOpacity>
-					),
-				}}
-				name='Profile'
-				component={Profile}
 			/>
 		</Tab.Navigator>
 	);

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TailwindProvider } from 'tailwindcss-react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import { Button } from 'react-native-elements';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
@@ -16,6 +17,7 @@ import Tabs from './components/Tabs';
 import { auth } from './firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import Index from './screens/Index';
+import Profile from './screens/Profile';
 
 const Stack = createNativeStackNavigator();
 
@@ -44,8 +46,28 @@ export default function App() {
 					/>
 
 					<Stack.Screen name='CreateEvent' component={CreateEventScreen} />
+					<Stack.Screen
+						options={{
+							presentation: 'modal',
+							headerShown: true,
+							headerStyle: { backgroundColor: 'white' },
+							headerLeft: () => (
+								<Button
+									title='Done'
+									type='clear'
+									style={{ borderColor: '#102e48' }}
+								/>
+							),
+						}}
+						name='Profile'
+						component={Profile}
+					/>
 
-					<Stack.Screen name='Login' component={LoginScreen} />
+					<Stack.Screen
+						options={{ headerShown: false }}
+						name='Login'
+						component={LoginScreen}
+					/>
 
 					<Stack.Screen name='Register' component={RegisterScreen} />
 				</Stack.Navigator>
