@@ -97,7 +97,8 @@ const Home = ({ navigation }) => {
 
 			<View style={styles.headerContainer}>
 				<View className='flex-row items-center p-5'>
-					<TouchableOpacity onPress={signOutDialog}>
+					<TouchableOpacity
+						onPress={() => navigation.navigate('Profile', { data: userData })}>
 						<Image
 							source={require('../assets/profileimg.png')}
 							style={{ width: 40, height: 40 }}
