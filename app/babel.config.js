@@ -5,6 +5,8 @@ module.exports = function (api) {
 		plugins: [
 			'tailwindcss-react-native/babel',
 			'react-native-reanimated/plugin',
+			'transform-inline-environment-variables',
+			'module:react-native-dotenv',
 		],
 	};
 };

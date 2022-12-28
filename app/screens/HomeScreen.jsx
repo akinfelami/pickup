@@ -1,25 +1,71 @@
-import { View, SafeAreaView, TouchableOpacity } from 'react-native';
+import {
+	View,
+	SafeAreaView,
+	StyleSheet,
+	TouchableOpacity,
+	Alert,
+	ScrollView,
+	TextInput,
+} from 'react-native';
 import { Image, Text, Button } from 'react-native-elements';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
-import React, { useEffect, useState, Component } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { apiBaseUrl } from '../constants';
-import Tabs from '../components/Tabs';
 import { StatusBar } from 'expo-status-bar';
-import { Ionicons } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
+import { EvilIcons } from '@expo/vector-icons';
+import EventCards from '../components/Events';
+import { Feather } from '@expo/vector-icons';
+import Tabs from '../components/Tabs';
 
-const Home = ({ route, navigation }) => {
+const Home = ({ navigation }) => {
 	const [userData, setUserData] = useState({});
 	const [userName, setUserName] = useState('');
+	const [search, setSearch] = useState('');
 
-	const signOutUser = async () => {
-		try {
-			await signOut(auth);
-			navigation.replace('Login');
-		} catch (err) {
-			console.error(err);
-		}
+	const weekday = [
+		'Sunday',
+		'Monday',
+		'Tuesday',
+		'Wednesday',
+		'Thursday',
+		'Friday',
+		'Saturday',
+	];
+	const month = [
+		'January',
+		'February',
+		'March',
+		'April',
+		'May',
+		'June',
+		'July',
+		'August',
+		'September',
+		'October',
+		'November',
+		'December',
+	];
+
+	const d = new Date();
+	let currentMonth = month[d.getMonth()].toUpperCase();
+	let currentDay = weekday[d.getDay()].toUpperCase();
+
+	const signOutDialog = async () => {
+		Alert.alert('Sign out', 'Are you sure you want to sign out?', [
+			{
+				text: 'Cancel',
+				onPress: () => {},
+				style: 'cancel',
+			},
+			{
+				text: 'Sign out',
+				onPress: () => {
+					signOut(auth);
+					navigation.replace('Login');
+				},
+			},
+		]);
 	};
 
 	useEffect(() => {
@@ -41,51 +87,70 @@ const Home = ({ route, navigation }) => {
 		}
 	};
 
+	const searchSubmit = () => {
+		console.log('Search');
+	};
+
 	return (
-		<SafeAreaView className='flex-1'>
+		<SafeAreaView style={styles.container}>
 			<StatusBar style='dark' />
 
-			<View className='pt-5 flex-row-reverse ml-3 items-center'>
-				<TouchableOpacity onPress={signOutUser}>
-					<Image
-						className='mr-2'
-						source={require('../assets/profileimg.png')}
-						style={{ width: 40, height: 40 }}
-					/>
-				</TouchableOpacity>
-				{userName === '' ? (
-					<Text className='mr-3' h4>
-						Hi
+			<View style={styles.headerContainer}>
+				<View className='flex-row items-center p-5'>
+					<TouchableOpacity onPress={signOutDialog}>
+						<Image
+							source={require('../assets/profileimg.png')}
+							style={{ width: 40, height: 40 }}
+						/>
+					</TouchableOpacity>
+					<Text style={{ marginLeft: 10 }} h4>
+						Hi{`, ${userName}`}
 					</Text>
-				) : (
-					<Text className='mr-3' h4>
-						Hi, {userName}
+				</View>
+				<View style={{ paddingLeft: 20, paddingRight: 20 }}>
+					<Text>
+						{currentDay}, {currentMonth} {d.getDate()}
 					</Text>
-				)}
+
+					<Text h3 className='font-bold'>
+						Upcoming Events
+					</Text>
+				</View>
 			</View>
-			<View className='ml-5 mb-8'>
-				<Text h3 className='font-bold'>
-					{' '}
-					Your Events
-				</Text>
-			</View>
-			<Tabs data={userData} />
-			<View className='absolute bottom-10 w-full z-50 items-end -mx-6'>
-				<TouchableOpacity>
-					<AntDesign
-						onPress={() => {
-							navigation.navigate('CreateEvent', {
-								otherParam: userData.id,
-							});
-						}}
-						name='pluscircle'
-						size={48}
-						color='blue'
-					/>
-				</TouchableOpacity>
+
+			<Tabs />
+
+			<View style={styles.createEventButton}>
+				<Button
+					buttonStyle={{
+						height: 60,
+						width: 60,
+						borderRadius: 100,
+						backgroundColor: '#102e48',
+					}}
+					icon={<Feather name='plus' size={30} color='white' />}
+					containerStyle={styles.button}
+					onPress={() => navigation.navigate('CreateEvent')}
+				/>
 			</View>
 		</SafeAreaView>
 	);
 };
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+	},
+	headerContainer: {
+		marginBottom: 10,
+	},
+	createEventButton: {
+		justifyContent: 'center',
+		alignItems: 'center',
+		position: 'absolute',
+		bottom: 10,
+		right: 10,
+	},
+});
 
 export default Home;

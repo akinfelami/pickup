@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import 'expo-dev-menu';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { TailwindProvider } from 'tailwindcss-react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -13,6 +13,9 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import EventDetails from './screens/EventDetails';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Tabs from './components/Tabs';
+import { auth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import Index from './screens/Index';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,15 +37,17 @@ export default function App() {
 						name='Welcome'
 						component={WelcomeScreen}
 					/>
+					<Stack.Screen
+						options={{ headerShown: false }}
+						name='Index'
+						component={Index}
+					/>
+
+					<Stack.Screen name='CreateEvent' component={CreateEventScreen} />
+
 					<Stack.Screen name='Login' component={LoginScreen} />
 
 					<Stack.Screen name='Register' component={RegisterScreen} />
-					<Stack.Screen
-						options={{ headerShown: false }}
-						name='Home'
-						component={HomeScreen}
-					/>
-					<Stack.Screen name='CreateEvent' component={CreateEventScreen} />
 				</Stack.Navigator>
 			</TailwindProvider>
 		</NavigationContainer>
