@@ -47,13 +47,23 @@ const createEvent = async (req, res) => {
 
 		const event = new Event({
 			title,
+			eventImage,
+			photos,
+			fee,
 			description,
-			tags,
+			topics,
+			attendees,
+			venueType,
+			eventLink,
+			comments,
+			startTime,
+			endTime,
 			spots,
-			time,
 			date,
 			location,
-			organizer: user,
+			organizer: [user],
+			status: 'upcoming',
+			availability,
 		});
 
 		await event.save();
