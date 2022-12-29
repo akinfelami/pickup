@@ -12,19 +12,21 @@ const eventSchema = new mongoose.Schema(
 		},
 		spots: { type: Number, default: Infinity },
 		photos: { type: Array, default: [] },
-		fee: { type: Number },
+		fee: { type: Number, default: 0.0 },
 		description: {
 			type: String,
 			required: true,
 			minLength: [10, 'Must be at least 10 characters long'],
 		},
-		tags: { type: Array, default: [] },
-		rsvp: [
+		topics: { type: Array, default: [] },
+		attendees: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
 				ref: 'user',
 			},
 		],
+		venueType: { type: String, enum: ['Indoor', 'Outdoor', 'Online'] },
+		eventLink: { type: String, default: '' },
 		comments: [
 			{
 				type: mongoose.Schema.Types.ObjectId,
@@ -32,23 +34,22 @@ const eventSchema = new mongoose.Schema(
 			},
 		],
 		date: { type: Date, required: true },
-		time: { type: Date, required: true },
+		startTime: { type: Date, required: true },
+		endTime: { type: Date, required: true },
 		location: { type: String },
-		organizer: {
-			type: mongoose.Schema.Types.ObjectId,
-			ref: 'user',
-			required: true,
-		},
+		organizer: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: 'user',
+				required: true,
+			},
+		],
 		status: {
 			type: String,
-			enum: ['upcoming', 'past'],
+			enum: ['upcoming', 'past', 'saved'],
 			default: 'upcoming',
 		},
-		// type: {
-		// 	type: String,
-		// 	enum: ['recurring, non-recurring'],
-		// 	default: 'non-recurring',
-		// },
+		availability: { type: Boolean, default: true },
 	},
 	{
 		versionKey: false,
