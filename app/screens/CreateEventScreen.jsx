@@ -9,6 +9,7 @@ import {
 	ScrollView,
 	TextInput,
 	SafeAreaView,
+	Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Input, Text, Button } from 'react-native-elements';
@@ -23,6 +24,10 @@ import { Octicons } from '@expo/vector-icons';
 import DatePicker from 'react-native-datepicker';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { PLACES_API } from '@env';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { Feather } from '@expo/vector-icons';
+import { SimpleLineIcons } from '@expo/vector-icons';
+import { Picker } from '@react-native-picker/picker';
 
 const CreateEventScreen = ({ route, navigation }) => {
 	const [loading, setIsLoading] = useState(false);
@@ -31,51 +36,110 @@ const CreateEventScreen = ({ route, navigation }) => {
 	const [description, setEventDescription] = useState('');
 	const [location, setAddress] = useState('');
 	const [spots, setSpotsAvailable] = useState(0);
-	const [datePicker, setDatePicker] = useState(false);
 	const [date, setDate] = useState(new Date());
-	const [timePicker, setTimePicker] = useState(false);
 	const [time, setTime] = useState(new Date(Date.now()));
 	const [event, setEvent] = useState('');
+	const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+	const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
+	const [duration, setDuration] = useState(0);
+	const [selectedEventMode, setSelectedEventMode] = useState('');
+	const [pickMode, setPickMode] = useState(false);
 
-	const placesRef = useRef();
+	const pickerRef = useRef();
+
+	function open() {
+		pickerRef.current.focus();
+	}
+
+	function close() {
+		pickerRef.current.blur();
+	}
 
 	var today = new Date();
 	var dd = String(today.getDate()).padStart(2, '0');
 	var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
 	var yyyy = today.getFullYear();
 
-	today = dd + '-' + mm + '-' + yyyy;
+	today = mm + '/' + dd + '/' + yyyy;
+
+	const placesRef = useRef();
 
 	const onEventNameChange = (text) => {
 		setEventTitle(text);
 	};
 
-	function showDatePicker() {
-		setDatePicker(!datePicker);
-		setTimePicker(false);
-	}
+	const showDatePicker = () => {
+		setDatePickerVisibility(true);
+	};
 
-	function onDateSelected(event, value) {
-		setDate(value);
-	}
+	const hideDatePicker = () => {
+		setDatePickerVisibility(false);
+	};
 
-	function onTimeSelected(event, value) {
-		setTime(value);
-	}
-	function showTimePicker() {
-		setTimePicker(!timePicker);
-		setDatePicker(false);
-	}
+	const handleDateConfirm = (date) => {
+		var dateNow = new Date();
+		dateNow.setHours(0, 0, 0, 0);
+		if (dateNow <= date) {
+			setDate(date);
+			hideDatePicker();
+		} else {
+			Alert.alert('Error', 'Please, select a future date!');
+		}
+	};
 
-	function onTimeSelected(event, value) {
-		setTime(value);
-	}
+	const showTimePicker = () => {
+		setTimePickerVisibility(true);
+	};
+
+	const hideTimePicker = () => {
+		setTimePickerVisibility(false);
+	};
+
+	const handleTimeConfirm = (time) => {
+		setTime(time);
+		hideTimePicker();
+	};
 
 	function onTagSelected(event, value) {
 		let arr = [];
 		arr.push(value);
 		setTag(arr);
 	}
+
+	const dateTitle = () => {
+		return (
+			<View style={{ flexDirection: 'column' }}>
+				<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+					<Text style={{ fontSize: 16, marginRight: 5, color: 'blue' }}>
+						Date
+					</Text>
+					<SimpleLineIcons name='arrow-down' size={15} color='black' />
+				</View>
+
+				<Text style={{ fontSize: 18 }}>{date.toDateString()}</Text>
+			</View>
+		);
+	};
+
+	const timeTitle = () => {
+		return (
+			<View style={{ flexDirection: 'column' }}>
+				<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+					<Text style={{ fontSize: 16, marginRight: 5, color: 'blue' }}>
+						Start Time
+					</Text>
+					<SimpleLineIcons name='arrow-down' size={15} color='black' />
+				</View>
+
+				<Text style={{ fontSize: 18 }}>
+					{time.toLocaleTimeString('en-US', {
+						hour: '2-digit',
+						minute: '2-digit',
+					})}
+				</Text>
+			</View>
+		);
+	};
 
 	const createNewEvent = async () => {
 		setIsLoading(true);
@@ -131,29 +195,114 @@ const CreateEventScreen = ({ route, navigation }) => {
 				style={styles.container}
 				behavior={Platform.OS === 'ios' ? 'padding' : null}>
 				<StatusBar style='light' />
-				<Text h6 className='text-red-500 p-2'>
-					All fields required*
-				</Text>
+				<Input
+					placeholder='Title (required)'
+					type='text'
+					value={title}
+					onChangeText={(text) => onEventNameChange(text)}
+				/>
 
-				<View style={styles.inputContainer}>
-					<Input
-						placeholder='Event Title'
-						type='text'
-						value={title}
-						onChangeText={(text) => onEventNameChange(text)}
-					/>
+				<Input
+					label='Description (required)'
+					multiline={true}
+					style={{ height: 80, textAlignVertical: 'top' }}
+					placeholder='A brief description of your event. Minimum of 10 characters'
+					type='text'
+					value={description}
+					onChangeText={(text) => setEventDescription(text)}
+				/>
 
-					<Input
-						label='Event Description'
-						multiline={true}
-						style={{ height: 60, textAlignVertical: 'top' }}
-						placeholder='A brief description of your event. Minimum of 10 characters'
-						type='text'
-						value={description}
-						onChangeText={(text) => setEventDescription(text)}
-					/>
+				<View
+					style={{
+						flexDirection: 'row',
+						marginBottom: 20,
+					}}>
+					{/* Date Picker */}
+					<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+						<Feather name='calendar' size={32} color='#102e48' />
+						<Button
+							title={dateTitle}
+							onPress={showDatePicker}
+							type='outline'
+							buttonStyle={{
+								borderRadius: 5,
+								borderWidth: 0,
+								borderColor: '#102e48',
+							}}
+						/>
+						<DateTimePickerModal
+							isVisible={isDatePickerVisible}
+							mode='date'
+							onConfirm={handleDateConfirm}
+							onCancel={hideDatePicker}
+						/>
+					</View>
 
-					<GooglePlacesAutocomplete
+					{/* Time Picker */}
+					<View
+						style={{
+							marginLeft: 50,
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'space-around',
+						}}>
+						<Feather name='clock' size={32} color='#102e48' />
+
+						<Button
+							title={timeTitle}
+							onPress={showTimePicker}
+							type='outline'
+							buttonStyle={{
+								borderRadius: 5,
+								borderWidth: 0,
+								borderColor: '#102e48',
+							}}
+						/>
+						<DateTimePickerModal
+							isVisible={isTimePickerVisible}
+							mode='time'
+							onConfirm={handleTimeConfirm}
+							onCancel={hideDatePicker}
+						/>
+					</View>
+				</View>
+
+				<View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+					<View style={{ flex: 1, flexDirection: 'row' }}>
+						<Input
+							placeholder='Available spots'
+							type='text'
+							keyboardType={'numeric'}
+							value={spots}
+							onChangeText={(text) => setSpotsAvailable(text)}
+						/>
+					</View>
+					<View style={{ flex: 1, flexDirection: 'row' }}>
+						<Input
+							placeholder='Duration (hours)'
+							type='text'
+							keyboardType='numeric'
+							value={duration}
+							onChangeText={(text) => setDuration(text)}
+						/>
+					</View>
+				</View>
+				<View>
+					<Picker
+						ref={pickerRef}
+						style={{ width: 300, height: 50 }}
+						mode={'dropdown'}
+						selectedValue={selectedEventMode}
+						onValueChange={(itemValue, itemIndex) =>
+							setSelectedEventMode(itemValue)
+						}>
+						<Picker.Item label='Indoor' value='Java' />
+						<Picker.Item label='Outdoor' value='Outdoor' />
+						<Picker.Item label='Online' value='Online' />
+					</Picker>
+				</View>
+
+				{/* <GooglePlacesAutocomplete
 						placeholder='Enter a location'
 						onPress={(data, details = null) => {
 							setAddress(placesRef.current?.getAddressText());
@@ -178,75 +327,16 @@ const CreateEventScreen = ({ route, navigation }) => {
 								color: '#3caf50',
 							},
 						}}
-					/>
-
-					{/* <Input
-						placeholder='Tag e.g. Soccer, Volleyball'
-						type='text'
-						value={tags}
-						onChangeText={(text) => onTagSelected(text)}
 					/> */}
 
-					<Input
-						placeholder='Spots available'
-						type='text'
-						style={{ width: 100 }}
-						keyboardType={'numeric'}
-						value={spots}
-						onChangeText={(text) => setSpotsAvailable(text)}
-					/>
+				<Input
+					placeholder='Topics e.g. Soccer, Volleyball'
+					type='text'
+					value={tags}
+					onChangeText={(text) => onTagSelected(text)}
+				/>
 
-					<TouchableOpacity
-						className='flex-row justify-between m-3'
-						onPress={showDatePicker}>
-						<View className='flex-row space-x-2 items-center'>
-							<Fontisto name='date' size={24} color='black' />
-							<Text className='text-lg'>Select Date </Text>
-						</View>
-						<Text className='text-lg'>{date.toDateString()}</Text>
-					</TouchableOpacity>
-
-					<View>
-						{datePicker && (
-							<DateTimePicker
-								textColor='black'
-								themeVariant='dark'
-								value={date}
-								mode={'date'}
-								display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-								is24Hour={true}
-								onChange={onDateSelected}
-								style={StyleSheet.datePicker}
-							/>
-						)}
-					</View>
-
-					<TouchableOpacity
-						className='flex-row justify-between m-3'
-						onPress={showTimePicker}>
-						<View className='flex-row space-x-2 items-center'>
-							<Ionicons name='ios-time-outline' size={28} color='black' />
-							<Text className='text-lg'>Select Time </Text>
-						</View>
-						<Text className='text-lg'>{time.toLocaleTimeString('en-US')}</Text>
-					</TouchableOpacity>
-
-					<View>
-						{timePicker && (
-							<DateTimePicker
-								textColor='black'
-								themeVariant='dark'
-								value={time}
-								mode={'time'}
-								display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-								is24Hour={false}
-								onChange={onTimeSelected}
-								style={StyleSheet.datePicker}
-							/>
-						)}
-					</View>
-				</View>
-				{loading === true ? (
+				{/* {loading === true ? (
 					<Button
 						containerStyle={styles.button}
 						buttonStyle={{ backgroundColor: '#102e48' }}
@@ -263,7 +353,7 @@ const CreateEventScreen = ({ route, navigation }) => {
 						onPress={createNewEvent}
 						title='Create Event'
 					/>
-				)}
+				)} */}
 				<View style={{ height: 200 }}></View>
 			</KeyboardAvoidingView>
 		</TouchableWithoutFeedback>
@@ -271,33 +361,15 @@ const CreateEventScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-	title: {
-		textAlign: 'center',
-		fontSize: 20,
-		fontWeight: 'bold',
-	},
-	inputContainer: {
-		padding: 20,
-		width: '100%',
-	},
-	datePickerStyle: {
-		width: 180,
-	},
 	container: {
 		flex: 1,
-		paddingTop: 10,
+		padding: 10,
+		marginTop: 30,
 		alignItems: 'center',
 	},
 	button: {
 		width: 200,
 		borderRadius: 10,
-	},
-	text: {
-		fontSize: 25,
-		color: 'red',
-		padding: 3,
-		marginBottom: 10,
-		textAlign: 'center',
 	},
 });
 
