@@ -71,6 +71,7 @@ const EventCards = (navigation) => {
 			{DATA ? (
 				<View className='pl-4 pr-4 mt-2' style={styles.container}>
 					<FlatList
+						showsVerticalScrollIndicator={false}
 						data={DATA}
 						renderItem={renderItem}
 						keyExtractor={(item) => item.id}
