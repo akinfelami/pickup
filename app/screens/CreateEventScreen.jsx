@@ -23,6 +23,8 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Feather } from '@expo/vector-icons';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import FlashMessage from 'react-native-flash-message';
+import { showMessage, hideMessage } from 'react-native-flash-message';
 
 const CreateEventScreen = ({ route, navigation }) => {
 	const [loading, setIsLoading] = useState(false);
@@ -38,6 +40,8 @@ const CreateEventScreen = ({ route, navigation }) => {
 	const [isEndPickerVisible, setEndPickerVisibility] = useState(false);
 
 	const [selectedEventMode, setSelectedEventMode] = useState('');
+
+	const { userId } = route.params;
 
 	const pickerRef = useRef();
 
@@ -83,8 +87,12 @@ const CreateEventScreen = ({ route, navigation }) => {
 	};
 
 	const handleEndConfirm = (time) => {
-		setEnd(time);
-		hideEndPicker();
+		if (start > end) {
+			Alert.alert('Error', 'Event must end at a later date');
+		} else {
+			setEnd(time);
+			hideEndPicker();
+		}
 	};
 
 	function onTagSelected(event, value) {
@@ -126,11 +134,11 @@ const CreateEventScreen = ({ route, navigation }) => {
 			onPressItem: showEndPicker,
 		},
 
-		{
-			id: '4',
-			title: 'Topics',
-			defaultText: 'e.g Soccer',
-		},
+		// {
+		// 	id: '4',
+		// 	title: 'Topics',
+		// 	defaultText: 'e.g Soccer',
+		// },
 	];
 
 	const createNewEvent = async () => {
@@ -141,14 +149,12 @@ const CreateEventScreen = ({ route, navigation }) => {
 			const data = {
 				title,
 				description,
-				tags,
-				spots,
-				time: end,
-				date: start,
+				startTime: start,
+				endTime: end,
 				location,
 			};
 
-			const response = await fetch(`${apiBaseUrl}/event/${otherParam}/new`, {
+			const response = await fetch(`${apiBaseUrl}/event/${userId}/new`, {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
@@ -161,10 +167,13 @@ const CreateEventScreen = ({ route, navigation }) => {
 			setEvent(response.data);
 
 			if (response.status != 201) {
-				alert('Oops! We were unable to create that event. Try again, please!');
+				Alert.alert(
+					'Error',
+					'Oops! We were unable to create that event. Try again, please!'
+				);
 			} else {
 				console.log(event);
-				navigation.replace('EventDetails', {
+				navigation.navigate('EventDetails', {
 					event: event,
 				});
 			}
@@ -268,6 +277,40 @@ const CreateEventScreen = ({ route, navigation }) => {
 						value={description}
 						onChangeText={(text) => setEventDescription(text)}
 					/>
+
+					<GooglePlacesAutocomplete
+						placeholder='Enter a location'
+						onPress={(data, details = null) => {
+							setAddress(placesRef.current?.getAddressText());
+							console.log(placesRef.current?.getAddressText());
+						}}
+						ref={placesRef}
+						query={{
+							key: PLACES_API,
+							language: 'en',
+						}}
+						fetchDetails={true}
+						onFail={(error) => console.log(error)}
+						onNotFound={() => console.log('no results')}
+						listEmptyComponent={() => (
+							<View style={{ flex: 1 }}>
+								<Text>No results were found</Text>
+							</View>
+						)}
+						textInputProps={{
+							InputComp: Input,
+						}}
+						value={location}
+						styles={{
+							container: {
+								flex: 0,
+							},
+
+							description: {
+								fontSize: 20,
+							},
+						}}
+					/>
 					<Input
 						placeholder='Available spots'
 						type='text'
@@ -285,39 +328,13 @@ const CreateEventScreen = ({ route, navigation }) => {
 						keyExtractor={(item) => item.id}
 					/>
 
-					<GooglePlacesAutocomplete
-						placeholder='Enter a location'
-						onPress={(data, details = null) => {
-							setAddress(placesRef.current?.getAddressText());
-							console.log(placesRef.current?.getAddressText());
-						}}
-						ref={placesRef}
-						query={{
-							key: PLACES_API,
-							language: 'en',
-						}}
-						fetchDetails={true}
-						onFail={(error) => console.log(error)}
-						onNotFound={() => console.log('no results')}
-						value={location}
-						styles={{
-							container: {
-								flex: 0,
-								backgroundColor: 'white',
-							},
-
-							predefinedPlacesDescription: {
-								color: '#3caf50',
-							},
-						}}
-					/>
-					<Input
+					{/* <Input
 						placeholder='Topics e.g. Soccer, Volleyball'
 						type='text'
 						value={tags}
 						onChangeText={(text) => onTagSelected(text)}
-					/>
-					<View style={{ alignItems: 'center' }}>
+					/> */}
+					<View style={{ alignItems: 'center', padding: 20 }}>
 						{loading === true ? (
 							<Button
 								containerStyle={styles.button}
@@ -364,7 +381,7 @@ const CreateEventScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-	container: { padding: 10, flex: 1 },
+	container: { padding: 10, flex: 1, backgroundColor: 'white' },
 	button: {
 		width: 200,
 		borderRadius: 10,

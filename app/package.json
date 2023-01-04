@@ -28,6 +28,7 @@
     "react-native": "0.70.6",
     "react-native-datepicker": "^1.7.2",
     "react-native-elements": "^3.4.2",
+    "react-native-flash-message": "^0.4.0",
     "react-native-google-places-autocomplete": "^2.5.1",
     "react-native-modal-datetime-picker": "^14.0.1",
     "react-native-modal-picker": "^0.0.16",
