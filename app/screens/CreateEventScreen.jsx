@@ -22,7 +22,6 @@ import { PLACES_API } from '@env';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Feather } from '@expo/vector-icons';
 import { SimpleLineIcons } from '@expo/vector-icons';
-import { Picker } from '@react-native-picker/picker';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const CreateEventScreen = ({ route, navigation }) => {
@@ -34,13 +33,11 @@ const CreateEventScreen = ({ route, navigation }) => {
 	const [spots, setSpotsAvailable] = useState(0);
 	const [start, setStart] = useState(new Date());
 	const [end, setEnd] = useState(new Date(Date.now()));
-	const [endTime, setEndTime] = useState(new Date(Date.now()));
 	const [event, setEvent] = useState('');
 	const [isStartPickerVisible, setStartPickerVisibility] = useState(false);
 	const [isEndPickerVisible, setEndPickerVisibility] = useState(false);
 
 	const [selectedEventMode, setSelectedEventMode] = useState('');
-	const [pickMode, setPickMode] = useState(false);
 
 	const pickerRef = useRef();
 
@@ -90,10 +87,6 @@ const CreateEventScreen = ({ route, navigation }) => {
 		hideEndPicker();
 	};
 
-	const showPickerMode = () => {
-		setPickMode(!pickMode);
-	};
-
 	function onTagSelected(event, value) {
 		let arr = [];
 		arr.push(value);
@@ -105,7 +98,7 @@ const CreateEventScreen = ({ route, navigation }) => {
 	var yyyy = start.getFullYear();
 	const DDMMYY = mm + '/' + dd + '/' + yyyy;
 
-	// I am sorry for repeating the code above :(
+	// May the gods of Javascript forgive me for repeating code  :(
 	var dd = String(end.getDate()).padStart(2, '0');
 	var mm = String(end.getMonth() + 1).padStart(2, '0'); //January is 0!
 	var yyyy = end.getFullYear();
@@ -132,18 +125,7 @@ const CreateEventScreen = ({ route, navigation }) => {
 			}),
 			onPressItem: showEndPicker,
 		},
-		{
-			id: '6',
-			title: 'Location',
-			defaultText: 'Ithaca, NY',
-		},
 
-		{
-			id: '3',
-			title: 'Event Mode',
-			defaultText: selectedEventMode,
-			onPressItem: showPickerMode,
-		},
 		{
 			id: '4',
 			title: 'Topics',
@@ -263,23 +245,6 @@ const CreateEventScreen = ({ route, navigation }) => {
 		);
 	};
 
-	const PickerComponent = () => {
-		return (
-			<Picker
-				ref={pickerRef}
-				style={{ width: 300, height: 50 }}
-				mode={'dropdown'}
-				selectedValue={selectedEventMode}
-				onValueChange={(itemValue, itemIndex) =>
-					setSelectedEventMode(itemValue)
-				}>
-				<Picker.Item label='Indoor' value='Java' />
-				<Picker.Item label='Outdoor' value='Outdoor' />
-				<Picker.Item label='Online' value='Online' />
-			</Picker>
-		);
-	};
-
 	return (
 		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 			<KeyboardAvoidingView
@@ -310,6 +275,7 @@ const CreateEventScreen = ({ route, navigation }) => {
 						value={spots}
 						onChangeText={(text) => setSpotsAvailable(text)}
 					/>
+
 					<FlatList
 						scrollEnabled={false}
 						style={{ width: '100%' }}
@@ -318,10 +284,8 @@ const CreateEventScreen = ({ route, navigation }) => {
 						renderItem={renderItem}
 						keyExtractor={(item) => item.id}
 					/>
-					<View style={{ alignItems: 'center' }}>
-						{pickMode === true ? <PickerComponent /> : undefined}
-					</View>
-					{/* <GooglePlacesAutocomplete
+
+					<GooglePlacesAutocomplete
 						placeholder='Enter a location'
 						onPress={(data, details = null) => {
 							setAddress(placesRef.current?.getAddressText());
@@ -346,13 +310,13 @@ const CreateEventScreen = ({ route, navigation }) => {
 								color: '#3caf50',
 							},
 						}}
-					/> */}
-					{/* <Input
-					placeholder='Topics e.g. Soccer, Volleyball'
-					type='text'
-					value={tags}
-					onChangeText={(text) => onTagSelected(text)}
-				/> */}
+					/>
+					<Input
+						placeholder='Topics e.g. Soccer, Volleyball'
+						type='text'
+						value={tags}
+						onChangeText={(text) => onTagSelected(text)}
+					/>
 					<View style={{ alignItems: 'center' }}>
 						{loading === true ? (
 							<Button
