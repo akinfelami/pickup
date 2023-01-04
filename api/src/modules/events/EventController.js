@@ -41,7 +41,7 @@ const getAllEvents = async (req, res) => {
 
 const createEvent = async (req, res) => {
 	try {
-		const { title, description, tags, location, time, date, spots } = req.body;
+		const {} = req.body;
 
 		const user = await User.findById(req.params.userId).lean().exec();
 
@@ -59,7 +59,6 @@ const createEvent = async (req, res) => {
 			startTime,
 			endTime,
 			spots,
-			date,
 			location,
 			organizer: [user],
 			status: 'upcoming',
