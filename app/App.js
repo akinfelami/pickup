@@ -69,6 +69,8 @@ export default function App() {
 						component={LoginScreen}
 					/>
 
+					<Stack.Screen name='EventDetails' component={EventDetails} />
+
 					<Stack.Screen name='Register' component={RegisterScreen} />
 				</Stack.Navigator>
 			</TailwindProvider>
