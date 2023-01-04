@@ -87,7 +87,7 @@ const CreateEventScreen = ({ route, navigation }) => {
 	};
 
 	const handleEndConfirm = (time) => {
-		if (start > end) {
+		if (start > time) {
 			Alert.alert('Error', 'Event must end at a later date');
 		} else {
 			setEnd(time);

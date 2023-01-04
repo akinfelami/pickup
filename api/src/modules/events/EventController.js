@@ -41,7 +41,23 @@ const getAllEvents = async (req, res) => {
 
 const createEvent = async (req, res) => {
 	try {
-		const {} = req.body;
+		const {
+			title,
+			eventImage,
+			photos,
+			fee,
+			description,
+			topics,
+			attendees,
+			venueType,
+			eventLink,
+			comments,
+			startTime,
+			endTime,
+			spots,
+			location,
+			availability,
+		} = req.body;
 
 		const user = await User.findById(req.params.userId).lean().exec();
 
@@ -75,6 +91,7 @@ const createEvent = async (req, res) => {
 
 		res.status(201).json(event);
 	} catch (err) {
+		console.log(err.message);
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
 };
