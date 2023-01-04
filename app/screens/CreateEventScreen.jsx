@@ -9,20 +9,22 @@ import {
 	ScrollView,
 	TextInput,
 	SafeAreaView,
+	FlatList,
+	Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Input, Text, Button } from 'react-native-elements';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { apiBaseUrl } from '../constants';
 import React, { useLayoutEffect, useState, useRef } from 'react';
 import { auth } from '../firebase';
-import { Fontisto } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
-import { FontAwesome } from '@expo/vector-icons';
-import { Octicons } from '@expo/vector-icons';
-import DatePicker from 'react-native-datepicker';
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { PLACES_API } from '@env';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { Feather } from '@expo/vector-icons';
+import { SimpleLineIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+import FlashMessage from 'react-native-flash-message';
+import { showMessage, hideMessage } from 'react-native-flash-message';
 
 const CreateEventScreen = ({ route, navigation }) => {
 	const [loading, setIsLoading] = useState(false);
@@ -31,51 +33,113 @@ const CreateEventScreen = ({ route, navigation }) => {
 	const [description, setEventDescription] = useState('');
 	const [location, setAddress] = useState('');
 	const [spots, setSpotsAvailable] = useState(0);
-	const [datePicker, setDatePicker] = useState(false);
-	const [date, setDate] = useState(new Date());
-	const [timePicker, setTimePicker] = useState(false);
-	const [time, setTime] = useState(new Date(Date.now()));
+	const [start, setStart] = useState(new Date());
+	const [end, setEnd] = useState(new Date(Date.now()));
 	const [event, setEvent] = useState('');
+	const [isStartPickerVisible, setStartPickerVisibility] = useState(false);
+	const [isEndPickerVisible, setEndPickerVisibility] = useState(false);
+
+	const [selectedEventMode, setSelectedEventMode] = useState('');
+
+	const { userId } = route.params;
+
+	const pickerRef = useRef();
+
+	function open() {
+		pickerRef.current.focus();
+	}
+
+	function close() {
+		pickerRef.current.blur();
+	}
 
 	const placesRef = useRef();
-
-	var today = new Date();
-	var dd = String(today.getDate()).padStart(2, '0');
-	var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-	var yyyy = today.getFullYear();
-
-	today = dd + '-' + mm + '-' + yyyy;
 
 	const onEventNameChange = (text) => {
 		setEventTitle(text);
 	};
 
-	function showDatePicker() {
-		setDatePicker(!datePicker);
-		setTimePicker(false);
-	}
+	const showStartPicker = () => {
+		setStartPickerVisibility(true);
+	};
 
-	function onDateSelected(event, value) {
-		setDate(value);
-	}
+	const hideStartPicker = () => {
+		setStartPickerVisibility(false);
+	};
 
-	function onTimeSelected(event, value) {
-		setTime(value);
-	}
-	function showTimePicker() {
-		setTimePicker(!timePicker);
-		setDatePicker(false);
-	}
+	const handleStartConfirm = (date) => {
+		var dateNow = new Date();
+		dateNow.setHours(0, 0, 0, 0);
+		if (dateNow <= date) {
+			setStart(date);
+			hideStartPicker();
+		} else {
+			Alert.alert('Error', 'Please, select a future date!');
+		}
+	};
 
-	function onTimeSelected(event, value) {
-		setTime(value);
-	}
+	const showEndPicker = () => {
+		setEndPickerVisibility(true);
+	};
+
+	const hideEndPicker = () => {
+		setEndPickerVisibility(false);
+	};
+
+	const handleEndConfirm = (time) => {
+		if (start > end) {
+			Alert.alert('Error', 'Event must end at a later date');
+		} else {
+			setEnd(time);
+			hideEndPicker();
+		}
+	};
 
 	function onTagSelected(event, value) {
 		let arr = [];
 		arr.push(value);
 		setTag(arr);
 	}
+
+	var dd = String(start.getDate()).padStart(2, '0');
+	var mm = String(start.getMonth() + 1).padStart(2, '0'); //January is 0!
+	var yyyy = start.getFullYear();
+	const DDMMYY = mm + '/' + dd + '/' + yyyy;
+
+	// May the gods of Javascript forgive me for repeating code  :(
+	var dd = String(end.getDate()).padStart(2, '0');
+	var mm = String(end.getMonth() + 1).padStart(2, '0'); //January is 0!
+	var yyyy = end.getFullYear();
+	const DDMMYYend = mm + '/' + dd + '/' + yyyy;
+
+	const modeOptions = [
+		{
+			id: '1',
+			title: 'Start',
+			defaultDate: DDMMYY,
+			defaultTime: start.toLocaleTimeString('en-US', {
+				hour: '2-digit',
+				minute: '2-digit',
+			}),
+			onPressItem: showStartPicker,
+		},
+		{
+			id: '2',
+			title: 'End',
+			defaultDate: DDMMYYend,
+			defaultTime: end.toLocaleTimeString('en-US', {
+				hour: '2-digit',
+				minute: '2-digit',
+			}),
+			onPressItem: showEndPicker,
+		},
+
+		// {
+		// 	id: '4',
+		// 	title: 'Topics',
+		// 	defaultText: 'e.g Soccer',
+		// },
+	];
 
 	const createNewEvent = async () => {
 		setIsLoading(true);
@@ -85,14 +149,12 @@ const CreateEventScreen = ({ route, navigation }) => {
 			const data = {
 				title,
 				description,
-				tags,
-				spots,
-				time,
-				date,
+				startTime: start,
+				endTime: end,
 				location,
 			};
 
-			const response = await fetch(`${apiBaseUrl}/event/${otherParam}/new`, {
+			const response = await fetch(`${apiBaseUrl}/event/${userId}/new`, {
 				method: 'POST',
 				headers: {
 					Accept: 'application/json',
@@ -105,10 +167,13 @@ const CreateEventScreen = ({ route, navigation }) => {
 			setEvent(response.data);
 
 			if (response.status != 201) {
-				alert('Oops! We were unable to create that event. Try again, please!');
+				Alert.alert(
+					'Error',
+					'Oops! We were unable to create that event. Try again, please!'
+				);
 			} else {
 				console.log(event);
-				navigation.replace('EventDetails', {
+				navigation.navigate('EventDetails', {
 					event: event,
 				});
 			}
@@ -125,26 +190,86 @@ const CreateEventScreen = ({ route, navigation }) => {
 		});
 	}, [navigation]);
 
+	const Item = ({
+		title,
+		defaultText,
+		defaultTime,
+		defaultDate,
+		onPressItem,
+	}) => (
+		<TouchableOpacity style={styles.item} onPress={onPressItem}>
+			<View
+				style={{
+					flexDirection: 'row',
+					alignItems: 'center',
+					flex: 1,
+					justifyContent: 'space-between',
+				}}>
+				<View>
+					<Text style={styles.title}> {title}</Text>
+				</View>
+				<View>
+					<View
+						style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'flex-end',
+						}}>
+						<Text style={{ color: 'grey', fontSize: 16 }}>{defaultText}</Text>
+						<Text style={{ color: 'grey', fontSize: 16 }}>{defaultDate} </Text>
+
+						<Text style={{ color: 'grey', fontSize: 16 }}>{defaultTime}</Text>
+						<MaterialIcons
+							name='keyboard-arrow-right'
+							size={30}
+							color='black'
+						/>
+					</View>
+				</View>
+			</View>
+		</TouchableOpacity>
+	);
+
+	const renderItem = ({ item }) => (
+		<Item
+			title={item.title}
+			defaultText={item.defaultText}
+			onPressItem={item.onPressItem}
+			defaultDate={item.defaultDate}
+			defaultTime={item.defaultTime}
+		/>
+	);
+
+	const ItemSeparatorView = () => {
+		return (
+			//Item Separator
+			<View
+				style={{
+					height: 1,
+					width: '100%',
+					backgroundColor: '#C8C8C8',
+					marginLeft: 10,
+				}}
+			/>
+		);
+	};
+
 	return (
 		<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
 			<KeyboardAvoidingView
 				style={styles.container}
 				behavior={Platform.OS === 'ios' ? 'padding' : null}>
 				<StatusBar style='light' />
-				<Text h6 className='text-red-500 p-2'>
-					All fields required*
-				</Text>
-
-				<View style={styles.inputContainer}>
+				<ScrollView>
 					<Input
-						placeholder='Event Title'
+						style={{ padding: 10, marginTop: 20 }}
+						placeholder='Event Name (required)'
 						type='text'
 						value={title}
 						onChangeText={(text) => onEventNameChange(text)}
 					/>
-
 					<Input
-						label='Event Description'
+						label='Description (required)'
 						multiline={true}
 						style={{ height: 60, textAlignVertical: 'top' }}
 						placeholder='A brief description of your event. Minimum of 10 characters'
@@ -167,137 +292,104 @@ const CreateEventScreen = ({ route, navigation }) => {
 						fetchDetails={true}
 						onFail={(error) => console.log(error)}
 						onNotFound={() => console.log('no results')}
+						listEmptyComponent={() => (
+							<View style={{ flex: 1 }}>
+								<Text>No results were found</Text>
+							</View>
+						)}
+						textInputProps={{
+							InputComp: Input,
+						}}
 						value={location}
 						styles={{
 							container: {
 								flex: 0,
-								backgroundColor: 'white',
 							},
 
-							predefinedPlacesDescription: {
-								color: '#3caf50',
+							description: {
+								fontSize: 20,
 							},
 						}}
 					/>
-
-					{/* <Input
-						placeholder='Tag e.g. Soccer, Volleyball'
-						type='text'
-						value={tags}
-						onChangeText={(text) => onTagSelected(text)}
-					/> */}
-
 					<Input
-						placeholder='Spots available'
+						placeholder='Available spots'
 						type='text'
-						style={{ width: 100 }}
 						keyboardType={'numeric'}
 						value={spots}
 						onChangeText={(text) => setSpotsAvailable(text)}
 					/>
 
-					<TouchableOpacity
-						className='flex-row justify-between m-3'
-						onPress={showDatePicker}>
-						<View className='flex-row space-x-2 items-center'>
-							<Fontisto name='date' size={24} color='black' />
-							<Text className='text-lg'>Select Date </Text>
-						</View>
-						<Text className='text-lg'>{date.toDateString()}</Text>
-					</TouchableOpacity>
+					<FlatList
+						scrollEnabled={false}
+						style={{ width: '100%' }}
+						data={modeOptions}
+						ItemSeparatorComponent={ItemSeparatorView}
+						renderItem={renderItem}
+						keyExtractor={(item) => item.id}
+					/>
 
-					<View>
-						{datePicker && (
-							<DateTimePicker
-								textColor='black'
-								themeVariant='dark'
-								value={date}
-								mode={'date'}
-								display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-								is24Hour={true}
-								onChange={onDateSelected}
-								style={StyleSheet.datePicker}
+					{/* <Input
+						placeholder='Topics e.g. Soccer, Volleyball'
+						type='text'
+						value={tags}
+						onChangeText={(text) => onTagSelected(text)}
+					/> */}
+					<View style={{ alignItems: 'center', padding: 20 }}>
+						{loading === true ? (
+							<Button
+								containerStyle={styles.button}
+								buttonStyle={{ backgroundColor: '#102e48' }}
+								loading
+								title='Login'
+							/>
+						) : (
+							<Button
+								containerStyle={styles.button}
+								buttonStyle={{
+									backgroundColor: '#102e48',
+									borderRadius: 5,
+								}}
+								onPress={createNewEvent}
+								title='Create Event'
 							/>
 						)}
 					</View>
 
-					<TouchableOpacity
-						className='flex-row justify-between m-3'
-						onPress={showTimePicker}>
-						<View className='flex-row space-x-2 items-center'>
-							<Ionicons name='ios-time-outline' size={28} color='black' />
-							<Text className='text-lg'>Select Time </Text>
-						</View>
-						<Text className='text-lg'>{time.toLocaleTimeString('en-US')}</Text>
-					</TouchableOpacity>
-
 					<View>
-						{timePicker && (
-							<DateTimePicker
-								textColor='black'
-								themeVariant='dark'
-								value={time}
-								mode={'time'}
-								display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-								is24Hour={false}
-								onChange={onTimeSelected}
-								style={StyleSheet.datePicker}
-							/>
-						)}
+						{/* Start */}
+						<DateTimePickerModal
+							isVisible={isStartPickerVisible}
+							mode='datetime'
+							onConfirm={handleStartConfirm}
+							onCancel={hideStartPicker}
+						/>
+
+						{/* End */}
+
+						<DateTimePickerModal
+							isVisible={isEndPickerVisible}
+							mode='datetime'
+							onConfirm={handleEndConfirm}
+							onCancel={hideEndPicker}
+						/>
 					</View>
-				</View>
-				{loading === true ? (
-					<Button
-						containerStyle={styles.button}
-						buttonStyle={{ backgroundColor: '#102e48' }}
-						loading
-						title='Login'
-					/>
-				) : (
-					<Button
-						containerStyle={styles.button}
-						buttonStyle={{
-							backgroundColor: '#102e48',
-							borderRadius: 5,
-						}}
-						onPress={createNewEvent}
-						title='Create Event'
-					/>
-				)}
-				<View style={{ height: 200 }}></View>
+					<View style={{ height: 200 }}></View>
+				</ScrollView>
 			</KeyboardAvoidingView>
 		</TouchableWithoutFeedback>
 	);
 };
 
 const styles = StyleSheet.create({
-	title: {
-		textAlign: 'center',
-		fontSize: 20,
-		fontWeight: 'bold',
-	},
-	inputContainer: {
-		padding: 20,
-		width: '100%',
-	},
-	datePickerStyle: {
-		width: 180,
-	},
-	container: {
-		flex: 1,
-		paddingTop: 10,
-		alignItems: 'center',
-	},
+	container: { padding: 10, flex: 1, backgroundColor: 'white' },
 	button: {
 		width: 200,
 		borderRadius: 10,
 	},
-	text: {
-		fontSize: 25,
-		color: 'red',
-		padding: 3,
-		marginBottom: 10,
-		textAlign: 'center',
+	title: {
+		padding: 10,
+		fontSize: 18,
+		height: 44,
 	},
 });
 

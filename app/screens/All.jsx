@@ -5,11 +5,7 @@ import EventCards from '../components/Events';
 import React from 'react';
 
 const All = () => {
-	return (
-		<ScrollView>
-			<EventCards />
-		</ScrollView>
-	);
+	return <EventCards />;
 };
 
 export default All;

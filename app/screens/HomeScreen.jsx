@@ -131,7 +131,9 @@ const Home = ({ navigation }) => {
 					}}
 					icon={<Feather name='plus' size={30} color='white' />}
 					containerStyle={styles.button}
-					onPress={() => navigation.navigate('CreateEvent')}
+					onPress={() =>
+						navigation.navigate('CreateEvent', { userId: userData.id })
+					}
 				/>
 			</View>
 		</SafeAreaView>

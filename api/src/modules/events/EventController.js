@@ -41,19 +41,28 @@ const getAllEvents = async (req, res) => {
 
 const createEvent = async (req, res) => {
 	try {
-		const { title, description, tags, location, time, date, spots } = req.body;
+		const {} = req.body;
 
 		const user = await User.findById(req.params.userId).lean().exec();
 
 		const event = new Event({
 			title,
+			eventImage,
+			photos,
+			fee,
 			description,
-			tags,
+			topics,
+			attendees,
+			venueType,
+			eventLink,
+			comments,
+			startTime,
+			endTime,
 			spots,
-			time,
-			date,
 			location,
-			organizer: user,
+			organizer: [user],
+			status: 'upcoming',
+			availability,
 		});
 
 		await event.save();
