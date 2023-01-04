@@ -152,6 +152,7 @@ const CreateEventScreen = ({ route, navigation }) => {
 				startTime: start,
 				endTime: end,
 				location,
+				spots,
 			};
 
 			const response = await fetch(`${apiBaseUrl}/event/${userId}/new`, {
@@ -174,7 +175,7 @@ const CreateEventScreen = ({ route, navigation }) => {
 			} else {
 				console.log(event);
 				navigation.navigate('EventDetails', {
-					event: event,
+					data,
 				});
 			}
 		} catch (err) {
