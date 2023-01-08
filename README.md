@@ -12,6 +12,7 @@ I am making this repository public, incase anyone finds any of the code useful.
 - start the api
 
   - the api uses firebase authentication and mongodb. Please refer to their individual documentations to get the appropriate credentials.
+  - the api also uses redis for databse caching. Obtain relevant credentials from redis cloud
 
     ```
     cd api
