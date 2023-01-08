@@ -1,4 +1,20 @@
 .env
-.DS_Store
 firebase.js
-api/node_modules
+cornell-pickup-firebase-adminsdk-35pej-5305c57ea2.json
+node_modules
+
+node_modules/
+.expo/
+.expo-shared/
+dist/
+npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# macOS
+.DS_Store
