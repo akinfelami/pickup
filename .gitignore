@@ -2,6 +2,7 @@
 node_modules/
 .expo/
 .expo-shared
+firebase.js
 dist/
 npm-debug.*
 *.jks

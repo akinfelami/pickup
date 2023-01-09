@@ -35,6 +35,7 @@ const Login = ({ navigation }) => {
 				setIsLoading(false);
 			})
 			.catch((error) => {
+				console.error(error);
 				let errorMessage = error.code;
 				if (errorMessage === 'auth/invalid-email') {
 					Alert.alert('Login error', 'Invalid email!');
