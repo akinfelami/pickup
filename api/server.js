@@ -10,12 +10,22 @@ const userRouter = require('./src/modules/users/UserRoutes');
 const eventRouter = require('./src/modules/events/EventRoutes');
 const commentRouter = require('./src/modules/comments/CommentRoutes');
 require('./src/utils/redis');
-const serviceAccount = require('./cornell-pickup-firebase-adminsdk-35pej-4859c3b754.json');
+const serviceAccount = {
+	type: process.env.TYPE,
+	project_id: process.env.PROJECT_ID,
+	private_key_id: process.env.PRIVATE_KEY_ID,
+	private_key: process.env.PRIVATE_KEY,
+	client_email: process.env.CLIENT_EMAIL,
+	client_id: process.env.CLIENT_ID,
+	auth_uri: process.env.AUTH_URI,
+	token_uri: process.env.TOKEN_URI,
+	auth_provider_x509_cert_url: process.env.AUTH_PROVIDER_x509_CERT_URL,
+	client_x509_cert_url: process.env.CLIENT_x509_CERT_URL,
+};
 const admin = require('firebase-admin');
 
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
-	databaseURL: 'https://cornell-pickup-default-rtdb.firebaseio.com',
 });
 
 app.use(cors());
