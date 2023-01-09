@@ -1,7 +1,4 @@
 .env
-firebase.js
-cornell-pickup-firebase-adminsdk-35pej-4859c3b754.json
-
 node_modules/
 .expo/
 .expo-shared
