@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar';
 import 'expo-dev-menu';
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -8,14 +7,9 @@ import { Button } from 'react-native-elements';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
-import HomeScreen from './screens/HomeScreen';
 import CreateEventScreen from './screens/CreateEventScreen';
 import WelcomeScreen from './screens/WelcomeScreen';
 import EventDetails from './screens/EventDetails';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Tabs from './components/Tabs';
-import { auth } from './firebase';
-import { onAuthStateChanged } from 'firebase/auth';
 import Index from './screens/Index';
 import Profile from './screens/Profile';
 
