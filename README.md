@@ -2,7 +2,7 @@
 
 ## An app for scheduling pickup games in the US & beyond?
 
-The goal of this app was to make pickup games easier to organize at Cornell. Since development began a few months ago, the app has quickly grown in complexity. I am taking on a new role in another project that we have to deliver to a client soonest. Unfortunately, I do not have the time and resources to complete this project at this moment. I am putting it on pause, hoping to continue in the nearest future.
+The goal of this app was to make pickup games easier to organize at Cornell. Since development began a few months ago, the app has grown in complexity. I am taking on a new role in another project that we have to deliver to a client soonest. Unfortunately, I do not have the time and resources to complete this project at this moment. I am putting it on pause, hoping to continue in the nearest future.
 
 I am making this repository public, incase anyone finds any of the code useful.
 
