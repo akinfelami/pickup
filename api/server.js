@@ -10,7 +10,7 @@ const userRouter = require('./src/modules/users/UserRoutes');
 const eventRouter = require('./src/modules/events/EventRoutes');
 const commentRouter = require('./src/modules/comments/CommentRoutes');
 require('./src/utils/redis');
-const serviceAccount = require('./cornell-pickup-firebase-adminsdk-35pej-5305c57ea2.json');
+const serviceAccount = require('./cornell-pickup-firebase-adminsdk-35pej-4859c3b754.json');
 const admin = require('firebase-admin');
 
 admin.initializeApp({
