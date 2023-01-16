@@ -32,4 +32,12 @@ I am making this repository public, incase anyone finds any of the code useful.
     ```
   - follow instructions in terminal to run the app.
 
-Open to questions/feedback/comments. Contributions are also welcome
+Open to questi![Simulator Screen Shot - iPhone 14 Pro Max - 2023-01-08 at 15 19 55](https://user-images.githubusercontent.com/59776300/212585417-07821f22-63ad-4ae0-8ce7-6361bfe244fd.png)
+![Simulator Screen Shot - iPhone 14 Pro Max - 2023-01-08 at 15 20 09](https://user-images.githubusercontent.com/59776300/212585424-e94c044b-8d50-436a-b23a-05c41aaf4f5e.png)
+![Simulator Screen Shot - iPhone 14 Pro Max - 2023-01-08 at 15 20 33](https://user-images.githubusercontent.com/59776300/212585426-b2cef3bf-d7d4-4ec9-83c7-ed8a9f8c7e44.png)
+![Simulator Screen Shot - iPhone 14 Pro Max - 2023-01-08 at 15 20 44](https://user-images.githubusercontent.com/59776300/212585429-806535d7-6a37-4dac-8306-89f287bff759.png)
+![Simulator Screen Shot - iPhone 14 Pro Max - 2023-01-08 at 15 21 01](https://user-images.githubusercontent.com/59776300/212585430-e548d78d-c966-4977-acc5-48bd82d43667.png)
+ons/feedback/comments. Contributions are also welcome
+
+
+## Screenshots
