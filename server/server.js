@@ -10,6 +10,7 @@ const userRouter = require('./src/modules/users/UserRoutes');
 const eventRouter = require('./src/modules/events/EventRoutes');
 const commentRouter = require('./src/modules/comments/CommentRoutes');
 require('./src/utils/redis');
+
 const serviceAccount = {
 	type: process.env.TYPE,
 	project_id: process.env.PROJECT_ID,
@@ -24,14 +25,22 @@ const serviceAccount = {
 };
 const admin = require('firebase-admin');
 
+
+
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAccount),
 });
 
+// Middleware
 app.use(cors());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Swagger
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require('./swagger.json');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Database Connection
 const connectDb = async () => {

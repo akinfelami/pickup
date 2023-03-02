@@ -3,6 +3,7 @@ const User = require('../../models/User');
 const RecentEvents = require('../../models/RecentEvents');
 
 const getEvent = async (req, res) => {
+	// #swagger.tags = ['Events']
 	try {
 		const event = await Event.findById(req.params.eventId)
 			.cache({ expire: 10 })
@@ -16,6 +17,7 @@ const getEvent = async (req, res) => {
 };
 
 const getAllUserEvent = async (req, res) => {
+	// #swagger.tags = ['Events']
 	try {
 		const user = await User.findById(req.params.userId)
 			.cache({ expire: 10 })
@@ -28,6 +30,7 @@ const getAllUserEvent = async (req, res) => {
 };
 
 const getAllEvents = async (req, res) => {
+	// #swagger.tags = ['Events']
 	try {
 		const allEvents = await Event.find({})
 			.cache({ expire: 10 })
@@ -40,6 +43,7 @@ const getAllEvents = async (req, res) => {
 };
 
 const createEvent = async (req, res) => {
+	// #swagger.tags = ['Events']
 	try {
 		const {
 			title,
@@ -97,6 +101,7 @@ const createEvent = async (req, res) => {
 };
 
 const rsvpUser = async (req, res) => {
+	// #swagger.tags = ['Events']
 	try {
 		const user = await User.findById(req.params.userId).lean().exec();
 		const event = await Event.findById(req.params.eventId).lean().exec();
@@ -128,6 +133,7 @@ const rsvpUser = async (req, res) => {
 };
 
 const UnRsvpUser = async (req, res) => {
+	// #swagger.tags = ['Events']
 	try {
 		const user = await User.findById(req.params.userId).lean().exec();
 		const event = await Event.findById(req.params.eventId).lean().exec();
@@ -159,6 +165,7 @@ const UnRsvpUser = async (req, res) => {
 };
 
 const updateEvent = async (req, res) => {
+	// #swagger.tags = ['Events']
 	try {
 		const { date, time, photo } = req.body;
 
@@ -181,6 +188,7 @@ const updateEvent = async (req, res) => {
 };
 
 const deleteEvent = async (req, res) => {
+	// #swagger.tags = ['Events']
 	try {
 		const event = await Event.findById(req.params.eventId).lean().exec();
 

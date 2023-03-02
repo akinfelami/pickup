@@ -2,11 +2,8 @@ var bcrypt = require('bcrypt');
 const User = require('../../models/User');
 const admin = require('firebase-admin');
 
-const getWelcome = async (req, res) => {
-	res.status(200).send('Welcome');
-};
-
 const getUser = async (req, res) => {
+	// #swagger.tags = ['Users']
 	try {
 		const user = await User.findOne({ firebaseId: req.params.userId })
 			.cache({ expire: 10 })
@@ -29,6 +26,7 @@ const getUser = async (req, res) => {
 };
 
 const updateAboutUser = async (req, res) => {
+	// #swagger.tags = ['Users']
 	try {
 		const { about } = req.body;
 		await User.findByIdAndUpdate(
@@ -44,6 +42,7 @@ const updateAboutUser = async (req, res) => {
 };
 
 const updateFirebaseId = async (req, res) => {
+	// #swagger.tags = ['Users']
 	try {
 		const { firebaseId } = req.body;
 		await User.findByIdAndUpdate(
@@ -59,6 +58,7 @@ const updateFirebaseId = async (req, res) => {
 };
 
 const updateUserInterests = async (req, res) => {
+	// #swagger.tags = ['Users']
 	try {
 		const { interests } = req.body;
 
@@ -75,6 +75,7 @@ const updateUserInterests = async (req, res) => {
 };
 
 const registerUser = async (req, res) => {
+	// #swagger.tags = ['Users']
 	try {
 		const { firstName, lastName, email, password } = req.body;
 
@@ -111,6 +112,7 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
+	// #swagger.tags = ['Users']
 	try {
 		const { email, password } = req.body;
 
@@ -155,6 +157,7 @@ const loginUser = async (req, res) => {
 };
 
 const logoutUser = async (req, res) => {
+	// #swagger.tags = ['Users']
 	try {
 		res.cookie('jwt', '', { maxAge: 1 });
 		res.send({ msg: 'You have been logged out' });
@@ -167,7 +170,6 @@ module.exports = {
 	updateUserInterests,
 	updateAboutUser,
 	updateFirebaseId,
-	getWelcome,
 	getUser,
 	registerUser,
 	loginUser,

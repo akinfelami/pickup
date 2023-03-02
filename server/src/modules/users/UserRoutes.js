@@ -3,7 +3,7 @@ const router = express.Router();
 const { auth } = require('../../middleware/auth');
 const userController = require('./UserController');
 
-router.get('/', auth, userController.getWelcome);
+
 router.get('/get/:userId', auth, userController.getUser);
 router.post('/update/:userId', auth, userController.updateAboutUser);
 router.post('/update/firebase/:userId', auth, userController.updateFirebaseId);

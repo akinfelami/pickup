@@ -3,6 +3,7 @@ const User = require('../../models/User');
 const Comment = require('../../models/Comment');
 
 const getComment = async (req, res) => {
+	// #swagger.tags = ['Comments']
 	try {
 		const comment = await Comment.findById(req.params.commentId)
 			.cache({ expire: 10 })
@@ -16,6 +17,8 @@ const getComment = async (req, res) => {
 };
 
 const createComment = async (req, res) => {
+	// #swagger.tags = ['Comments']
+
 	try {
 		const { text } = req.body;
 		const user = await User.findById(req.params.userId).lean().exec();
@@ -42,6 +45,8 @@ const createComment = async (req, res) => {
 };
 
 const deleteComment = async (req, res) => {
+	// #swagger.tags = ['Comments']
+
 	try {
 		const comment = await Comment.findById(req.params.commentId).lean().exec();
 
