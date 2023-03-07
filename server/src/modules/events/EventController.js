@@ -1,211 +1,217 @@
 const Event = require('../../models/Event');
 const User = require('../../models/User');
 const RecentEvents = require('../../models/RecentEvents');
+const Prisma  = require('@prisma/client');
+
+const prisma = new Prisma.PrismaClient();
+
 
 const getEvent = async (req, res) => {
 	// #swagger.tags = ['Events']
-	try {
-		const event = await Event.findById(req.params.eventId)
-			.cache({ expire: 10 })
-			.lean()
-			.exec();
 
-		res.status(200).json(event);
-	} catch (err) {
+	try{
+		const event = await prisma.event.findUnique({
+			where: {
+				id: req.params.eventId
+			}
+		})
+		res.status(200).json(event)
+
+	}catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
+
 };
 
 const getAllUserEvent = async (req, res) => {
 	// #swagger.tags = ['Events']
-	try {
-		const user = await User.findById(req.params.userId)
-			.cache({ expire: 10 })
-			.lean()
-			.exec();
-		res.status(200).json(user.events);
-	} catch (err) {
+
+	// Get events a user has associated with them
+
+	try{
+		const user = await prisma.user.findUnique({
+			where: {
+				id: req.params.userId
+			},
+			include: {
+				events: true
+			}
+		})
+		res.status(200).json(user)
+	}catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
 };
 
 const getAllEvents = async (req, res) => {
 	// #swagger.tags = ['Events']
-	try {
-		const allEvents = await Event.find({})
-			.cache({ expire: 10 })
-			.sort({ createdAt: -1 });
 
-		res.status(200).send(allEvents);
-	} catch (err) {
+	// All events in the database
+
+	try{
+		const allEvents = await prisma.event.findMany({
+			orderBy: {
+				createdAt: 'desc'
+			}
+		})
+		res.status(200).json(allEvents)
+	}catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
 };
 
 const createEvent = async (req, res) => {
 	// #swagger.tags = ['Events']
-	try {
-		const {
-			title,
-			eventImage,
-			photos,
-			fee,
-			description,
-			topics,
-			attendees,
-			venueType,
-			eventLink,
-			comments,
-			startTime,
-			endTime,
-			spots,
-			location,
-			availability,
-		} = req.body;
 
-		const user = await User.findById(req.params.userId).lean().exec();
+	// Create a new event
 
-		const event = new Event({
-			title,
-			eventImage,
-			photos,
-			fee,
-			description,
-			topics,
-			attendees,
-			venueType,
-			eventLink,
-			comments,
-			startTime,
-			endTime,
-			spots,
-			location,
-			organizer: [user],
-			status: 'upcoming',
-			availability,
-		});
-
-		await event.save();
-
-		await User.findByIdAndUpdate(
-			req.params.userId,
-			{ $push: { events: event } },
-			{ new: true, upsert: true }
-		);
-
-		res.status(201).json(event);
-	} catch (err) {
-		console.log(err.message);
+	try{
+		await prisma.event.create({
+			data: {
+				...req.body,
+				owner: {
+					connect: {
+						id: req.params.userId
+					}
+				}
+			}
+		}
+		)
+		res.status(201).json({ status: 'Success' });
+	}catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
+
 };
 
 const rsvpUser = async (req, res) => {
 	// #swagger.tags = ['Events']
-	try {
-		const user = await User.findById(req.params.userId).lean().exec();
-		const event = await Event.findById(req.params.eventId).lean().exec();
 
-		const userRsvped = await Event.find({
-			rsvp: user,
-		});
+	// RSVP a user to an event
 
-		if (userRsvped.length > 0) {
+	try{
+
+		// Check if user is already rsvped to event
+
+		const user = await prisma.eventEnrollment.findUnique({
+			where: {
+				userId: req.params.userId,
+			}
+		})
+
+		if (user) {
 			return res.status(409).send('You already rsvped for this event!');
 		}
 
-		const updatedEvent = await Event.findByIdAndUpdate(
-			req.params.eventId,
-			{ $push: { rsvp: user } },
-			{ new: true, upsert: true }
-		);
-
-		const updatedUser = await User.findByIdAndUpdate(
-			req.params.userId,
-			{ $push: { events: event } },
-			{ new: true, upsert: true }
-		);
-
-		res.status(200).json(updatedEvent);
-	} catch (err) {
-		res.status(400).json({ status: 'failed', message: err.message });
+		await prisma.eventEnrollment.create({
+			data: {
+				user: {
+					connect: {
+						id: req.params.userId
+					}
+				},
+				event: {
+					connect: {
+						id: req.params.eventId
+					}
+				}
+			}
+		})
+		res.status(200).json({ status: 'success', message: 'User rsvped successfully' });
+	} catch (e) {
+		res.status(400).json({ status: 'failed', message: e.message });
 	}
+
 };
 
 const UnRsvpUser = async (req, res) => {
 	// #swagger.tags = ['Events']
+
+
+	// UnRSVP a user from an event
+
 	try {
-		const user = await User.findById(req.params.userId).lean().exec();
-		const event = await Event.findById(req.params.eventId).lean().exec();
 
-		const userRsvped = await Event.find({
-			rsvp: user,
-		});
+		// Check if user is already rsvped to event
 
-		if (userRsvped.length === 0) {
+		const user = await prisma.eventEnrollment.findUnique({
+			where: {
+				userId: req.params.userId,
+			}
+		})
+
+		if (!user) {
 			return res.status(409).send('You have not rsvped for this event!');
 		}
 
-		const updatedEvent = await Event.findByIdAndUpdate(
-			req.params.eventId,
-			{ $pull: { rsvp: user._id } },
-			{ new: true, upsert: true }
-		);
+		await prisma.eventEnrollment.delete({
+			where: {
+				userId: req.params.userId
+			}
+		})
 
-		const updatedUser = await User.findByIdAndUpdate(
-			req.params.userId,
-			{ $pull: { events: event._id } },
-			{ new: true, upsert: true }
-		);
-
-		res.status(200).json(updatedEvent);
-	} catch (err) {
-		res.status(400).json({ status: 'failed', message: err.message });
+		res.status(200).json({ status: 'success', message: 'User un-rsvped successfully' });
+	}catch (e) {
+		res.status(400).json({ status: 'failed', message: e.message });
 	}
+
 };
 
 const updateEvent = async (req, res) => {
 	// #swagger.tags = ['Events']
+
+	// Update an event
+
 	try {
-		const { date, time, photo } = req.body;
 
-		const event = await Event.findById(req.params.eventId).lean().exec();
+		const event = await prisma.event.findUnique({
+			where: {
+				id: req.params.eventId
+			}
+		})
 
-		if (event.organizer._id != req.params.userId) {
+		if (event.ownerId != req.params.userId) {
 			return res.status(409).send('You are not the event organizer!');
 		}
 
-		const updatedEvent = await Event.findByIdAndUpdate(
-			req.params.eventId,
-			{ time: time, date: date, $push: { photos: photo } },
-			{ new: true, upsert: true }
-		);
+		await prisma.event.update({
+			where: {
+				id: req.params.eventId
+			}, data:{
+				...req.body
+			}
+		})
 
-		res.status(200).json(updatedEvent);
-	} catch (err) {
+		res.status(200).json({ status: 'success', message: 'Event updated successfully' });
+		}catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
+
 };
 
 const deleteEvent = async (req, res) => {
 	// #swagger.tags = ['Events']
-	try {
-		const event = await Event.findById(req.params.eventId).lean().exec();
 
-		if (event.organizer._id != req.params.userId) {
+
+	// Delete an event
+
+	try{
+		const event = await prisma.event.findUnique({
+			where: {
+				id: req.params.eventId
+			}
+		})
+		if (event.ownerId != req.params.userId) {
 			return res.status(409).send('You are not the event organizer!');
 		}
+		await prisma.event.delete({
+			where: {
+				id: req.params.eventId
+			}
+		})
 
-		const recent = new RecentEvents({
-			event: event._id,
-		});
-
-		await recent.save();
-
-		await Event.findByIdAndDelete(req.params.eventId).lean().exec();
-
-		res.status(200).json(event);
-	} catch (err) {
+		res.status(200).json({ status: 'success', message: 'Event deleted successfully' });
+	}catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
 };

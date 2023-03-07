@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const redis = require('redis');
 const util = require('util');
 require('dotenv').config();
+
+
 const client = redis.createClient({
 	socket: {
 		host: process.env.REDIS_HOST,
@@ -12,6 +14,32 @@ const client = redis.createClient({
 client.on('error', (err) => {
 	console.log('Error ' + err);
 });
+const Prisma = require("prisma");
+const { PrismaClient } = require("@prisma/client");
+const { createPrismaRedisCache } = require("prisma-redis-middleware");
+
+const prisma = new PrismaClient();
+
+const cacheMiddleware = createPrismaRedisCache({
+	models: [
+		{ model: "User", cacheTime: 60 },
+		{ model: "Event", cacheTime: 180 },
+		{ model: "Comment", cacheTime: 300 },
+	],
+	storage: { type: "memory", options: { invalidation: true, log: console } },
+	cacheTime: 300,
+	onHit: (key) => {
+		console.log("hit", key);
+	},
+	onMiss: (key) => {
+		console.log("miss", key);
+	},
+	onError: (key) => {
+		console.log("error", key);
+	},
+});
+
+prisma.$use(cacheMiddleware);
 
 const connectRedis = async () => {
 	try {
@@ -23,46 +51,6 @@ const connectRedis = async () => {
 };
 connectRedis();
 
-const exec = mongoose.Query.prototype.exec;
-
-mongoose.Query.prototype.cache = function (options = { expire: 60 }) {
-	this.useCache = true;
-	this.expire = options.expire;
-	this.hashKey = JSON.stringify(options.key || this.mongooseCollection.name);
-
-	return this;
-};
-
-mongoose.Query.prototype.exec = async function () {
-	if (!this.useCache) {
-		return await exec.apply(this, arguments);
-	}
-
-	const key = JSON.stringify({
-		...this.getQuery(),
-		collection: this.mongooseCollection.name,
-	});
-
-	const cacheValue = await client.hGet(this.hashKey, key);
-
-	if (!cacheValue) {
-		const result = await exec.apply(this, arguments);
-		client.hSet(this.hashKey, key, JSON.stringify(result));
-		client.expire(this.hashKey, this.expire);
-
-		console.log('Return data from MongoDB');
-		return result;
-	}
-
-	const doc = JSON.parse(cacheValue);
-	console.log('Return data from Redis');
-	return Array.isArray(doc)
-		? doc.map((d) => new this.model(d))
-		: new this.model(doc);
-};
-
 module.exports = {
-	clearHash(hashKey) {
-		client.del(JSON.stringify(hashKey));
-	},
+cacheMiddleware,
 };

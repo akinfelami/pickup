@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String @id @default(cuid())
+  email String @unique
+
+  firstName  String?
+  lastName   String?
+  username   String   @unique
+  firebaseId String?  @unique
+  about      String?
+  avatar     String?  @default("https://firebasestorage.googleapis.com/v0/b/cornell-pickup.appspot.com/o/profileimg.png?alt=media&token=0217244c-0dc7-4984-9b03-54d9037d2ff0")
+  active     Boolean? @default(false)
+  verified   Boolean? @default(false)
+
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  events        EventEnrollment[]
+  createdEvents Event[]           @relation(name: "EventOwner")
+
+  comments Comment[] @relation(name: "UserComments")
+}
+
+model Event {
+  id    String @id @default(cuid())
+  title String
+
+  eventImage  String?
+  spots       Int?
+  photos      String[]
+  fee         Int?              @default(0)
+  description String
+  tags        String[]
+  attendees   EventEnrollment[]
+  venueType   Venue?            @default(Online)
+  eventLink   String?
+  startTime   DateTime
+  endTime     DateTime
+  status      Status?           @default(Upcoming)
+  location    String
+
+  owner   User   @relation(fields: [ownerId], references: [id], name: "EventOwner")
+  ownerId String
+
+  comments Comment[] @relation(name: "EventComments")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EventEnrollment {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  // Attendees info
+  eventId   String   @unique
+  userId    String   @unique
+  event     Event    @relation(fields: [eventId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@id([userId, eventId])
+}
+
+model Comment {
+  id String @id @default(cuid())
+
+  content String
+  eventId String
+  userId  String
+  event   Event  @relation(fields: [eventId], references: [id], name: "EventComments")
+  author  User   @relation(fields: [userId], references: [id], name: "UserComments")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Venue {
+  Indoor
+  Outdoor
+  Online
+}
+
+enum Status {
+  Upcoming
+  Past
+  Saved
+}

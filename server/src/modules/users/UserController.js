@@ -1,170 +1,159 @@
 var bcrypt = require('bcrypt');
 const User = require('../../models/User');
 const admin = require('firebase-admin');
+const Prisma = require('@prisma/client');
+
+const prisma = new Prisma.PrismaClient();
 
 const getUser = async (req, res) => {
 	// #swagger.tags = ['Users']
-	try {
-		const user = await User.findOne({ firebaseId: req.params.userId })
-			.cache({ expire: 10 })
-			.lean()
-			.exec();
-		res.status(200).json({
-			id: user._id,
-			firstName: user.firstName,
-			lastName: user.lastName,
-			displayName: user.username,
-			groups: user.groups,
-			firebaseId: user.firebaseId,
-			events: user.events,
-			about: user.about,
-			interests: user.interests,
-		});
-	} catch (err) {
+	try{
+		const user = await prisma.user.findUnique({
+
+			where: {
+				id: req.params.userId
+			}
+		})
+		// Note to self: should I include all user fields here?
+		res.status(200).json(user)
+
+	}catch(err){
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
 };
 
 const updateAboutUser = async (req, res) => {
 	// #swagger.tags = ['Users']
-	try {
-		const { about } = req.body;
-		await User.findByIdAndUpdate(
-			req.params.userId,
-			{ about: about },
-			{ new: true, upsert: true }
-		);
 
+	try{
+		const { about } = req.body;
+		const user = await prisma.user.update({
+			where: {
+				id: req.params.userId
+			},
+			data: {
+				about: about
+			}
+		})
 		res.status(201).json({ status: 'Success' });
-	} catch (err) {
+	}catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
 };
 
 const updateFirebaseId = async (req, res) => {
 	// #swagger.tags = ['Users']
-	try {
-		const { firebaseId } = req.body;
-		await User.findByIdAndUpdate(
-			req.params.userId,
-			{ firebaseId: firebaseId },
-			{ new: true, upsert: true }
-		);
 
+	try{
+		const { firebaseId } = req.body;
+		const user = await prisma.user.update({
+			where: {
+				id: req.params.userId
+			},
+			data: {
+				firebaseId: firebaseId
+			}
+		})
 		res.status(201).json({ status: 'Success' });
-	} catch (err) {
+	}catch (err) {
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
 };
 
 const updateUserInterests = async (req, res) => {
 	// #swagger.tags = ['Users']
+
 	try {
 		const { interests } = req.body;
-
-		await User.findByIdAndUpdate(
-			req.params.userId,
-			{ $push: { interests: interests } },
-			{ new: true, upsert: true }
-		);
-
+		const user = await prisma.user.update({
+			where: {
+				id: req.params.userId
+			},
+			data: {
+				interests: interests
+			}
+		})
 		res.status(201).json({ status: 'Success' });
-	} catch (err) {
+	}catch (err){
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
+
 };
 
 const registerUser = async (req, res) => {
 	// #swagger.tags = ['Users']
-	try {
-		const { firstName, lastName, email, password } = req.body;
 
-		const oldUser = await User.findOne({ email });
+	try {
+		const oldUser = await prisma.user.findUnique({
+			where: {
+				email: req.body.email
+			}
+		})
 
 		if (oldUser) {
-			return res.json({ msg: 'User already exists. Please Login instead' });
+			return res.status(400).json("User already exists. Please Login instead");
 		}
 
-		var encryptedPassword = await bcrypt.hash(password, 10);
+		const user = await prisma.user.create({
+			data: {
+				...req.body
+			}
+		})
 
-		const user = new User({
-			username: firstName,
-			firstName,
-			lastName,
-			email: email.toLowerCase(),
-			password: encryptedPassword,
-		});
-
-		await user.save();
-
-		res.status(201).json({
-			id: user._id,
-			firstName: user.firstName,
-			lastName: user.lastName,
-			displayName: user.username,
-			groups: user.groups,
-			events: user.events,
-			interests: user.interests,
-		});
-	} catch (err) {
+		res.status(201).json(user);
+	}catch (err){
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
+
 };
 
 const loginUser = async (req, res) => {
 	// #swagger.tags = ['Users']
-	try {
-		const { email, password } = req.body;
-
-		if (!(email && password)) {
-			return res.status(400).send('All input required');
-		}
-
-		const user = await User.findOne({ email });
-
-		if (!user) {
-			return res.status(401).send({
-				msg:
-					'The email address ' + email + ' is not associated with any account',
-			});
-		}
-
-		if (user && (await bcrypt.compare(password, user.password))) {
-			const token = jwt.sign(
-				{ user_id: user._id, email },
-				process.env.TOKEN_KEY
-			);
-
-			res.cookie('jwt', token, { httpOnly: true });
-
-			return res.status(200).json({
-				id: user._id,
-				username: user.username,
-				email: user.email,
-				profile_pic: user.profile_pic,
-				groups: user.groups,
-				events: user.events,
-				interests: user.interests,
-				interests: user.interests,
-				createdAt: user.createdAt,
-			});
-		} else {
-			res.status(400).send('Invalid credentials');
-		}
-	} catch (err) {
+	try{
+		await prisma.user.update({
+			where: {
+				email: req.body.email
+			}, data:{
+				active: true
+			}
+		})
+		res.status(200).json({ status: 'Success' })
+	}catch (err){
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
 };
 
 const logoutUser = async (req, res) => {
 	// #swagger.tags = ['Users']
-	try {
-		res.cookie('jwt', '', { maxAge: 1 });
-		res.send({ msg: 'You have been logged out' });
-	} catch (err) {
+	try{
+		await prisma.user.update({
+			where: {
+				id: req.body.email
+			}, data:{
+				active: false
+			}
+		})
+	}catch (err){
+		res.status(400).json({ status: 'failed', message: err.message });
+	};
+};
+
+const verifyUser = async (req, res) => {
+	// #swagger.tags = ['Users']
+	try{
+		const user = await prisma.user.update({
+			where: {
+				id: req.params.userId
+			}, data:{
+				verified: true
+			}
+		})
+
+		res.status(200).json({ status: 'Success' })
+	}catch (err){
 		res.status(400).json({ status: 'failed', message: err.message });
 	}
-};
+}
 
 module.exports = {
 	updateUserInterests,
@@ -174,4 +163,5 @@ module.exports = {
 	registerUser,
 	loginUser,
 	logoutUser,
+	verifyUser
 };
