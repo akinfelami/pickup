@@ -9,6 +9,9 @@
     "start": "node server.js",
     "swagger": "node swagger.js"
   },
+  "prisma": {
+    "seed": "node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -31,6 +34,8 @@
     "redis": "^4.2.0",
     "swagger": "^0.7.5",
     "swagger-autogen": "^2.23.1",
-    "swagger-ui-express": "^4.6.2"
+    "swagger-ui-express": "^4.6.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
   }
 }
