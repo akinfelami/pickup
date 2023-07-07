@@ -12,7 +12,7 @@ const getUser = async (req, res) => {
 
 			where: {
 				id: req.params.userId
-			}
+			},
 		})
 		// Note to self: should I include all user fields here?
 		res.status(200).json(user)

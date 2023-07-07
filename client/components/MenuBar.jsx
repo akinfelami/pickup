@@ -1,162 +1,113 @@
-import * as React from 'react';
+import React, { ReactElement } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
+import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+import Link from 'next/link';
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const drawerWidth = 240;
 
-function ResponsiveAppBar() {
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+const DrawerAppBar = ({ navs, rightAlignedComponents }) => {
+	const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
+	const handleDrawerToggle = () => {
+		setMobileOpen((prevState) => !prevState);
+	};
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+	const drawer = (
+		<Box onClick={handleDrawerToggle}>
+			<List
+				sx={{
+					display: 'flex',
+					flexDirection: 'column',
+					justifyContent: 'center',
+					alignItems: 'center',
+				}}>
+				{navs.map((nav) => (
+					<Link href={nav.link} className='text-black no-underline'>
+						<ListItem key={nav.label} disablePadding>
+							<ListItemButton sx={{ textAlign: 'center' }}>
+								<ListItemText primary={nav.label} />
+							</ListItemButton>
+						</ListItem>
+					</Link>
+				))}
+				{rightAlignedComponents.map((component) => (
+					<Box className='mt-3'>{component}</Box>
+				))}
+			</List>
+		</Box>
+	);
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+	return (
+		<Box sx={{ display: 'flex' }}>
+			<AppBar
+				color='default'
+				component='nav'
+				elevation={0}
+				position='static'
+				className='h-14'>
+				<Toolbar
+					variant='dense'
+					className='pt-1 pb-1'
+					sx={{
+						display: 'flex',
+					}}>
+					<Typography variant='h6' component='div' sx={{ flexGrow: 1 }}>
+						PICKUP
+					</Typography>
 
-  return (
-    <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            LOGO
-          </Typography>
+					<Box className='hidden mt-1 sm:flex'>
+						<div className='ml-2 min-w-0'>
+							{rightAlignedComponents.map((component) => (
+								<>{component}</>
+							))}
+						</div>
+						{navs.map((nav) => (
+							<Link href={nav.link}>
+								<Button className='text-black capitalize'>{nav.label}</Button>
+							</Link>
+						))}
+					</Box>
+					<IconButton
+						color='inherit'
+						aria-label='open drawer'
+						onClick={handleDrawerToggle}
+						className='default sm:hidden'>
+						<MenuIcon />
+					</IconButton>
+				</Toolbar>
+			</AppBar>
+			<Box component='nav'>
+				<Drawer
+					container={() => document.getElementById('__next')}
+					variant='temporary'
+					open={mobileOpen}
+					onClose={handleDrawerToggle}
+					anchor='right'
+					ModalProps={{
+						keepMounted: true, // Better open performance on mobile.
+					}}
+					className='block sm:hidden'
+					sx={{
+						'& .MuiDrawer-paper': {
+							boxSizing: 'border-box',
+							width: drawerWidth,
+						},
+					}}>
+					{drawer}
+				</Drawer>
+			</Box>
+		</Box>
+	);
+};
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-              }}
-            >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href=""
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            LOGO
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
-
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-        </Toolbar>
-      </Container>
-    </AppBar>
-  );
-}
-export default ResponsiveAppBar;
+export default DrawerAppBar;
